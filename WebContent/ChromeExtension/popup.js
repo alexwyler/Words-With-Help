@@ -5,7 +5,7 @@ var board;
 function find() {
   chrome.extension.onRequest.addListener(
     function(request, sender, sendResponse) {
-      $("#status").html("Game Board Found, Processing Plays...");
+      $("#status").html("Game Board Found, Finding Moves...");
       for (var i = 0; i < 7; i++) {
         $("#rack_" + i).html(request.rack[i]);
       }
@@ -24,9 +24,7 @@ function find() {
 	      }
 	  },
 	  success: function(result) {
-	      $("#status").html("Plays Found!");
-	      console.log("resuilts");
-              console.log(result);
+	      $("#status").html("Moves Found!");
 	      options = result.options;
 	      curOptionIdx = 0;
 	      loadOption(options[curOptionIdx]);
