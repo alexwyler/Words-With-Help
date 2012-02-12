@@ -28,10 +28,16 @@ function find() {
 	      options = result.options;
 	      curOptionIdx = 0;
 	      loadOption(options[curOptionIdx]);
+	  },
+	  failure: function(result) {
+	      $("#status").html("ERROR SADFACE");
+	  },
+	  error: function(xhr, status) {
+	      $("#status").html("ERROR " + xhr.status);
 	  }
       });
     });
-    
+    debugger;
     chrome.tabs.executeScript(null,
 			      {allFrames: true, file:"iframe.js"});
 }
