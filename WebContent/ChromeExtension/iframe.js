@@ -8,6 +8,7 @@ function search() {
   if (game.length < 1) {
     return;
   }
+
   var rack = new Array();
   for (var i = 0; i < 7; i++) {
     rack.push(game.find(".rack_space_" + i).find(".letter").html());
@@ -26,21 +27,6 @@ function search() {
   chrome.extension.sendRequest(state, function(response) {
     console.log(response.farewell);
   });
-
-      $.ajax({
-          url: "http://10.0.0.6:8080/WordsWithCheats/",
-          type: "POST",
-	  data: JSON.stringify(state),
-          dataType: "json",
-          beforeSend: function(x) {
-            if (x && x.overrideMimeType) {
-              x.overrideMimeType("application/j-son;charset=UTF-8");
-            }
-          },
-          success: function(result) {
-	      console.log(result);
-          }
-	  });
 }
 search();
 
