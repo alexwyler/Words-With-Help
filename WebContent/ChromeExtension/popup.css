@@ -1,11 +1,11 @@
 body {
   width: 280px;
   height: 340px;
+  font-family: monospace;
 }
 
 .board {
   width: 260px;
-  font-family: monospace;
 }
 
 .red {
