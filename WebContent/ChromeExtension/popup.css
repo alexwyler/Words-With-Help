@@ -1,0 +1,25 @@
+body {
+  width: 300px;
+  font-family: monospace;
+}
+
+.red {
+  color: red;
+}
+
+.center {
+	margin: 0 auto;
+	text-align: center;	
+}
+
+.prev {
+	display: block;
+	width: 10px;
+	float: left;
+}
+
+.next {
+	display: block;
+	width: 10px;
+	float: right;
+}
