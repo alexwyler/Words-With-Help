@@ -1,0 +1,13 @@
+body {
+  width: 300px;
+  font-family: monospace;
+}
+
+.red {
+  color: red;
+}
+
+.center {
+  margin: 0 auto;
+  text-align: center;
+}

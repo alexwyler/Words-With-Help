@@ -1,9 +1,14 @@
 {
-  "name": "WWF Solver",
-  "version": "0.1",
+  "name": "Words With Help",
+
+  "version": "0.2",
+
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "tabs",
+    "http://apps.facebook.com/wordswithfriends/*", 
+    "http://apps.facebook.com/wordswithfriends/*"
   ],
+
   "browser_action": {
       "default_title": "LETS FIND TREASURE",
       "default_icon": "icon.png",
