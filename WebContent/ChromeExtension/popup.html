@@ -3,10 +3,14 @@
 <script src="popup.js"></script>
 
 <body>
+
 <div class="center">
-<span>Score </span>
-<span id="points">???</span>
+<span id="status">No Words With Friends Board Found</span>
+<br/>
+<span>Score: </span>
+<span id="points" class="red"></span>
 </div>
+<div class="board center">
 <div>
   <span id="0_0">_</span>
   <span id="0_1">_</span>
@@ -310,8 +314,10 @@
   <span id="15_14">_</span>
   <span id="15_15">_</span>
 </div>
+</div>
 <br/>
-<div>
+
+<div class="center" id="rack">
   <span id="rack_0">_</span>
   <span id="rack_1">_</span>
   <span id="rack_2">_</span>
@@ -321,7 +327,6 @@
   <span id="rack_6">_</span>
 </div>
 
-<button class="center" onclick="find()" id="red">cheat like boss</button>
 <div id="options-nav">
 <a href="#" onclick="prevOption()" class="prev"> &lt; </a> <a href="#" onclick="nextOption()" class="next"> &gt; </a>
 </div>

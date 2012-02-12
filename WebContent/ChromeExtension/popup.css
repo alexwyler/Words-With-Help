@@ -1,5 +1,10 @@
 body {
-  width: 300px;
+  width: 280px;
+  height: 340px;
+}
+
+.board {
+  width: 260px;
   font-family: monospace;
 }
 
@@ -8,18 +13,23 @@ body {
 }
 
 .center {
-	margin: 0 auto;
-	text-align: center;	
+  margin: 0 auto;
+  text-align: center;	
 }
 
 .prev {
-	display: block;
-	width: 10px;
-	float: left;
+  display: block;
+  width: 10px;
+  float: left;
 }
 
 .next {
-	display: block;
-	width: 10px;
-	float: right;
+  display: block;
+  width: 10px;
+  float: right;
+}
+
+#rack span {
+  border: 1px solid black;
+  padding: 3px;
 }
