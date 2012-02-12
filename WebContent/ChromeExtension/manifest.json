@@ -5,12 +5,14 @@
 
   "permissions": [
     "tabs",
+    "http://wwf-fb.zyngawithfriends.com/*", 
+    "https://wwf-fb.zyngawithfriends.com/*",
     "http://apps.facebook.com/wordswithfriends/*", 
-    "http://apps.facebook.com/wordswithfriends/*"
+    "https://apps.facebook.com/wordswithfriends/*"
   ],
 
   "browser_action": {
-      "default_title": "LETS FIND TREASURE",
+      "default_title": "Words With Help",
       "default_icon": "icon.png",
       "popup": "popup.html"
   }
