@@ -9,7 +9,7 @@ function find() {
       for (var i = 0; i < 7; i++) {
         $("#rack_" + i).html(request.rack[i]);
       }
-      
+	
       board = request.board;
       clearBoard();
 
@@ -26,7 +26,13 @@ function find() {
 	  success: function(result) {
 	      $("#status").html("Moves Found!");
 	      options = result.options;
+	      for (var i = 0; i < options.length; i++) {
+		  $("#options").append(
+		      "<span id=\"option" + i + "\">" + (i+1) + " </span>"
+		  );
+	      }
 	      curOptionIdx = 0;
+	      $("#option" + curOptionIdx).addClass("red");
 	      loadOption(options[curOptionIdx]);
 	  },
 	  failure: function(result) {
@@ -37,7 +43,7 @@ function find() {
 	  }
       });
     });
-    debugger;
+
     chrome.tabs.executeScript(null,
 			      {allFrames: true, file:"iframe.js"});
 }
@@ -52,6 +58,7 @@ function loadOption(move) {
 }
 
 function clearBoard() {
+
     for (var i = 0; i < 15; i++) {
         for (var j = 0; j < 15; j++) {
             var letter = board[j][i];
@@ -66,7 +73,9 @@ function clearBoard() {
 function prevOption() {
     if (curOptionIdx > 0) {
 	clearBoard();
+	$("#option" + curOptionIdx).removeClass("red");
 	curOptionIdx--;
+	$("#option" + curOptionIdx).addClass("red");
 	loadOption(options[curOptionIdx]);
     }
 }
@@ -74,7 +83,9 @@ function prevOption() {
 function nextOption() {
     if (curOptionIdx < options.length - 1) {
 	clearBoard();
+	$("#option" + curOptionIdx).removeClass("red");
 	curOptionIdx++;
+	$("#option" + curOptionIdx).addClass("red");
 	loadOption(options[curOptionIdx]);
     }
 }
