@@ -44,7 +44,10 @@ function find() {
 		      $("#option" + curOptionIdx).addClass("red");
 		      loadOption(options[curOptionIdx]);
 		  }
-	  }
+	  },
+      error:function (xhr, ajaxOptions, thrownError) {
+    	  $("#status").html("Unable to connect to server");
+      }
       });
     });
     chrome.tabs.executeScript(null,
