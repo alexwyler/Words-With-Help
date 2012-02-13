@@ -5,7 +5,10 @@ var board;
 function find() {
   chrome.extension.onRequest.addListener(
     function(request, sender, sendResponse) {
-      $("#status").html("Game Board Found, Finding Moves...");
+    	
+    	loadingGif = $("<img href='loading.gif'/>");
+     $("#status").html("Game Board Found, Finding Moves..." + loadingGif);
+    	
       for (var i = 0; i < 7; i++) {
         $("#rack_" + i).html(request.rack[i]);
       }
@@ -14,8 +17,9 @@ function find() {
       clearBoard();
 
       $.ajax({
-	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/",
-	  type: "POST",
+	  //url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/",
+	  url: "http://10.0.0.6:8080/WordsWithCheats/",
+      type: "POST",
 	  data: JSON.stringify(request),
 	  dataType: "json",
 	  beforeSend: function(x) {
@@ -28,16 +32,10 @@ function find() {
 	      options = result.options;
 	      curOptionIdx = 0;
 	      loadOption(options[curOptionIdx]);
-	  },
-	  failure: function(result) {
-	      $("#status").html("ERROR SADFACE");
-	  },
-	  error: function(xhr, status) {
-	      $("#status").html("ERROR " + xhr.status);
 	  }
       });
     });
-    debugger;
+    
     chrome.tabs.executeScript(null,
 			      {allFrames: true, file:"iframe.js"});
 }

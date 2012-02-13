@@ -16,6 +16,7 @@ public class NaiveChooser extends PlayChooser {
 
 	PlayingBoard game;
 	List<Character> tiles;
+	Set<List<Character>> allAnagrams;
 
 	public NaiveChooser(PlayingBoard game, List<Character> tiles) {
 		this.game = game;
@@ -24,6 +25,7 @@ public class NaiveChooser extends PlayChooser {
 
 	@Override
 	public List<PlayOption> getOptions() throws GameStateException {
+		allAnagrams = Anagramer.powerList(tiles);
 		List<PlayOption> options = new ArrayList<PlayOption>();
 		List<Point> preExisting = game.getAllPoints();
 		for (Point point : preExisting) {
@@ -54,7 +56,6 @@ public class NaiveChooser extends PlayChooser {
 		List<Map<Point, Character>> moves = new ArrayList<Map<Point, Character>>();
 		
 		Character c = game.getPlayedLetters()[point.x][point.y];
-		Set<List<Character>> allAnagrams = Anagramer.powerList(tiles);
 		for (List<Character> anagram : allAnagrams) {
 			for (int i = 0; i <= anagram.size(); i++) {
 				List<Character> inserted = new ArrayList<Character>(anagram);
