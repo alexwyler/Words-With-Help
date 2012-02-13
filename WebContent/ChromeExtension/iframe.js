@@ -10,15 +10,29 @@ function search() {
   }
 
   var rack = new Array();
+  var missing = new Array();
+
   for (var i = 0; i < 7; i++) {
-    rack.push(game.find(".rack_space_" + i).find(".letter").html());
+    var letter = game.find(".rack_space_" + i).find(".letter").html();
+    rack.push(letter);
+    if (letter == null) {
+      missing.push(i);
+    }
   }
 
   var board = new Array(15);
   for (var i = 0; i < 15; i++) {
     board[i] = new Array(15);
     for (var j = 0; j < 15; j++) {
-      board[i][j] = game.find(".space_" + i + "_" + j).find(".tile").html();
+      var letter = game.find(".space_" + i + "_" + j).children(".tile").html();
+      var placedLetter = game.find(".space_" + i + "_" + j).
+	    children(".tile").children(".letter").html();
+      if (placedLetter != null) {
+	rack[missing.pop()] = placedLetter;
+        board[i][j] = null;
+      } else {
+	board[i][j] = letter;
+      }
     }
   }
 
