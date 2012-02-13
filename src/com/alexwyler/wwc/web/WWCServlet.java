@@ -38,6 +38,7 @@ import com.alexwyler.wwc.chooser.PlayOption;
 public class WWCServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	JSONObject responseJSON;
 	/**
 	 * Default constructor.
 	 */
@@ -61,7 +62,6 @@ public class WWCServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		JSONObject responseJSON = null;
 		Scanner in = new Scanner(request.getInputStream());
 
 		String input = "";
@@ -103,7 +103,6 @@ public class WWCServlet extends HttpServlet {
 			Dictionary dict = Dictionary.getInstance(dictFile);
 			BoardDescription boardDesc = new WordsWithFriendsBoard();
 			PlayingBoard game = new PlayingBoard(boardDesc, dict, existing, 1);
-
 			PlayChooser chooser = new NaiveChooser(game, rackChars);
 			List<PlayOption> options = chooser.getOptions();
 
@@ -117,6 +116,10 @@ public class WWCServlet extends HttpServlet {
 
 		} catch (JSONException e) {
 			e.printStackTrace();
+			invalidInput();
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			internalError();
 		} catch (GameStateException e) {
 			e.printStackTrace();
 			internalError();
@@ -124,16 +127,28 @@ public class WWCServlet extends HttpServlet {
 			e.printStackTrace();
 			internalError();
 		}
+
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
 
 	private void internalError() {
-
+		responseJSON = new JSONObject();
+		try {
+			responseJSON.put("error", "Server Error");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			// fucked if this happens
+		}
 	}
 
 	private void invalidInput() {
-
+		responseJSON = new JSONObject();
+		try {
+			responseJSON.put("error", "Bad data from client");
+		} catch (JSONException e) {
+			// fucked if this happens
+		}
 	}
 
 	public JSONObject encodeOptions(List<PlayOption> options) {

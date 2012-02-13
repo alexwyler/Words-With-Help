@@ -224,7 +224,7 @@ public class PlayingBoard {
 		}
 		return score;
 	}
-
+	
 	private int scoreWord(List<Point> word) {
 		Space wordMod = null;
 		int score = 0;

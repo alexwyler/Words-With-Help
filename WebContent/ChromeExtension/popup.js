@@ -6,8 +6,8 @@ function find() {
   chrome.extension.onRequest.addListener(
     function(request, sender, sendResponse) {
     	
-    	loadingGif = $("<img href='loading.gif'/>");
-     $("#status").html("Game Board Found, Finding Moves..." + loadingGif);
+    	loadingGif = "<img src='loading.gif'/>";
+    	status = $("#status").html("Finding Moves...<br/>" + loadingGif);
     	
       for (var i = 0; i < 7; i++) {
         $("#rack_" + i).html(request.rack[i]);
@@ -28,16 +28,20 @@ function find() {
 	      }
 	  },
 	  success: function(result) {
-	      $("#status").html("Moves Found!");
-	      options = result.options;
-	      for (var i = 0; i < options.length; i++) {
-		  $("#options").append(
-		      "<span id=\"option" + i + "\">" + (i+1) + " </span>"
-		  );
-	      }
-	      curOptionIdx = 0;
-	      $("#option" + curOptionIdx).addClass("red");
-	      loadOption(options[curOptionIdx]);
+		  if (result.error) {
+			  $("#status").html(result.error);
+		  } else {
+		      $("#status").html("Moves Found!");
+		      options = result.options;
+		      for (var i = 0; i < options.length; i++) {
+			  $("#options").append(
+			      "<span id=\"option" + i + "\">" + (i+1) + " </span>"
+			  );
+		      }
+		      curOptionIdx = 0;
+		      $("#option" + curOptionIdx).addClass("red");
+		      loadOption(options[curOptionIdx]);
+		  }
 	  }
       });
     });
@@ -48,6 +52,7 @@ find();
 
 
 function loadOption(move) {
+	$('#scoreContainer').show();
     $("#points").html(move.score);
     for (var i in move.plays) {
         $("#" + move.plays[i].y + "_" + move.plays[i].x).html(move.plays[i].letter).addClass("red");
@@ -55,7 +60,7 @@ function loadOption(move) {
 }
 
 function clearBoard() {
-
+	$('#scoreContainer').hide();
     for (var i = 0; i < 15; i++) {
         for (var j = 0; j < 15; j++) {
             var letter = board[j][i];
