@@ -36,3 +36,7 @@ body {
   border: 1px solid black;
   padding: 3px;
 }
+
+#options span {
+  cursor: pointer;
+}

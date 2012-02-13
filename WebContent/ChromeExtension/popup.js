@@ -36,7 +36,8 @@ function find() {
 		      options = result.options;
 		      for (var i = 0; i < options.length; i++) {
 			  $("#options").append(
-			      "<span id=\"option" + i + "\">" + (i+1) + " </span>"
+			      "<span onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + (i+1) +
+			      " </span>"
 			  );
 		      }
 		      curOptionIdx = 0;
@@ -74,6 +75,14 @@ function clearBoard() {
             tile.html(letter);
         }
     }
+}
+
+function selectOption(idx) {
+    clearBoard();
+    $("#option" + curOptionIdx).removeClass("red");
+    curOptionIdx = idx;
+    $("#option" + curOptionIdx).addClass("red");
+    loadOption(options[curOptionIdx]);
 }
 
 function prevOption() {
