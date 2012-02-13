@@ -9,8 +9,7 @@
     "https://wwf-fb.zyngawithfriends.com/*",
     "http://apps.facebook.com/wordswithfriends/*", 
     "https://apps.facebook.com/wordswithfriends/*",
-    // FIX ME WITH REAL ADDRESS
-    "http://*/*"
+    "http://ec2-107-22-41-246.compute-1.amazonaws.com/*"
   ],
 
   "browser_action": {
