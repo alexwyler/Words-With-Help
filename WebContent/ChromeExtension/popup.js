@@ -30,6 +30,8 @@ function find() {
 	  success: function(result) {
 		  if (result.error) {
 			  $("#status").html(result.error);
+		  } else if (result.options.length < 1) {
+			  $("#status").html("No moves found");
 		  } else {
 		      $("#status").html("Moves Found!");
 		      options = result.options;
