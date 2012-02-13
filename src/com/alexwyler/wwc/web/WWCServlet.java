@@ -24,7 +24,6 @@ import us.monoid.json.JSONObject;
 import com.alexwyler.wwc.BoardDescription;
 import com.alexwyler.wwc.Dictionary;
 import com.alexwyler.wwc.GameStateException;
-import com.alexwyler.wwc.InvalidPlayException;
 import com.alexwyler.wwc.PlayingBoard;
 import com.alexwyler.wwc.WordsWithFriendsBoard;
 import com.alexwyler.wwc.chooser.NaiveChooser;
@@ -106,12 +105,6 @@ public class WWCServlet extends HttpServlet {
 			PlayChooser chooser = new NaiveChooser(game, rackChars);
 			List<PlayOption> options = chooser.getOptions();
 
-			for (PlayOption option : options) {
-				game.placeLetters(option.getMove());
-				game.printBoard(true);
-				System.out.println("score: " + game.scorePending());
-				game.discardPending();
-			}
 			responseJSON = encodeOptions(options);
 
 		} catch (JSONException e) {
@@ -121,9 +114,6 @@ public class WWCServlet extends HttpServlet {
 			e.printStackTrace();
 			internalError();
 		} catch (GameStateException e) {
-			e.printStackTrace();
-			internalError();
-		} catch (InvalidPlayException e) {
 			e.printStackTrace();
 			internalError();
 		}

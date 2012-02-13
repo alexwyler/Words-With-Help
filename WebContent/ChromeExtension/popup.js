@@ -17,8 +17,7 @@ function find() {
       clearBoard();
 
       $.ajax({
-	  //url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/",
-	  url: "http://10.0.0.6:8080/WordsWithCheats/",
+	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/",
       type: "POST",
 	  data: JSON.stringify(request),
 	  dataType: "json",
@@ -30,6 +29,8 @@ function find() {
 	  success: function(result) {
 		  if (result.error) {
 			  $("#status").html(result.error);
+		  } else if (result.options.length < 1) {
+			  $("#status").html("No moves found");
 		  } else {
 		      $("#status").html("Moves Found!");
 		      options = result.options;
@@ -42,7 +43,10 @@ function find() {
 		      $("#option" + curOptionIdx).addClass("red");
 		      loadOption(options[curOptionIdx]);
 		  }
-	  }
+	  },
+      error:function (xhr, ajaxOptions, thrownError) {
+    	  $("#status").html("Unable to connect to server");
+      }
       });
     });
     chrome.tabs.executeScript(null,
