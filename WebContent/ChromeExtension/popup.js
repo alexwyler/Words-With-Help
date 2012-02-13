@@ -17,7 +17,7 @@ function find() {
       clearBoard();
 
       $.ajax({
-	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/",
+	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/",
       type: "POST",
 	  data: JSON.stringify(request),
 	  dataType: "json",
