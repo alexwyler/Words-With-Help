@@ -10,6 +10,10 @@ public abstract class BoardDescription {
 	
 	public abstract int getLetterValue(char c);
 	
+	public abstract int numTilesForScrabble();
+	
+	public abstract int scrabbleBonus();
+	
 	static void fillArrayFromUpperRight(Space[][] spaces) {
 		for (int x = 0; x < spaces.length / 2; x++) {
 			int ylength = spaces[x].length;

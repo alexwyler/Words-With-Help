@@ -101,7 +101,7 @@ public class WWCServlet extends HttpServlet {
 
 			Dictionary dict = Dictionary.getInstance(dictFile);
 			BoardDescription boardDesc = new WordsWithFriendsBoard();
-			PlayingBoard game = new PlayingBoard(boardDesc, dict, existing, 1);
+			PlayingBoard game = new PlayingBoard(boardDesc, dict, existing);
 			PlayChooser chooser = new NaiveChooser(game, rackChars);
 			List<PlayOption> options = chooser.getOptions();
 

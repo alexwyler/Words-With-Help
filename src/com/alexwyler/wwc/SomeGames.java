@@ -43,6 +43,69 @@ public class SomeGames {
 	static {
 		stacey = flipXY(stacey);
 	}
+	
+	public static Character[][] test1 = new Character[][] {
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, 'A',  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, 'T',  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, 'T',  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null } };
+
+	static {
+		test1 = flipXY(test1);
+	}
+	
+	public static Character[][] test2 = new Character[][] {
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, 'I',  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, 'T',  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null,  null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null } };
+
+	static {
+		test2 = flipXY(test2);
+	}
+	
+	public static Character[][] test3 = new Character[][] {
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
+		new Character[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null } };
+
+	static {
+		test3 = flipXY(test3);
+	}
 
 	public static Character[][] flipXY(Character[][] board) {
 		Character[][] stacey2 = new Character[15][15];

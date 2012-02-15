@@ -13,31 +13,36 @@ public class Runner {
 
 	public static void main(String[] args) throws FileNotFoundException,
 			InvalidPlayException, GameStateException {
-		Dictionary dict = Dictionary.getInstance(new File("words.txt"));
+		Dictionary dict = Dictionary.getInstance(new File(
+				"WebContent/words.txt"));
 		BoardDescription board = new WordsWithFriendsBoard();
-		Character[][] current = SomeGames.stacey;
-		PlayingBoard game = new PlayingBoard(board, dict, current, 1);
+		Character[][] current = SomeGames.test3;
+		PlayingBoard game = new PlayingBoard(board, dict, current);
 		
+		game.printBoard(false);
+			
 		List<Character> chars = new ArrayList<Character>();
+		chars.add('c');
+		chars.add('h');
+		chars.add('e');
+		chars.add('a');
 		chars.add('t');
-		chars.add('o');
-		
-//		chars.add('t');
-//		chars.add('e');
-//		chars.add('e');
-//		chars.add('i');
-//		chars.add('i');
-//		chars.add('u');
-//		chars.add('l');
+		chars.add('a');
+		chars.add('h');
+		chars.add('s');
 
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();
-		
-		for (PlayOption option : options) {
-			game.placeLetters(option.getMove());
-			game.printBoard(true);
-			System.out.println("score: " + game.scorePending());
-			game.discardPending();
+
+		if (!options.isEmpty()) {
+			for (PlayOption option : options) {
+				game.placeLetters(option.getMove());
+				game.printBoard(true);
+				System.out.println("score: " + game.scorePending());
+				game.discardPending();
+			}
+		} else {
+			System.out.println("no results");
 		}
 
 	}

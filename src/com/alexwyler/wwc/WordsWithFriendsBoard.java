@@ -80,4 +80,14 @@ public class WordsWithFriendsBoard extends BoardDescription {
 		return points.get(Character.toUpperCase(c));
 	}
 
+	@Override
+	public int numTilesForScrabble() {
+		return 7;
+	}
+
+	@Override
+	public int scrabbleBonus() {
+		return 35;
+	}
+
 }

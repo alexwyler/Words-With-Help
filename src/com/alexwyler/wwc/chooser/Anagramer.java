@@ -2,6 +2,7 @@ package com.alexwyler.wwc.chooser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class Anagramer {
 		}
 		for (int i = 0; i < originalSet.size(); i++) {
 			Character head = originalSet.remove(i);
-			List<Character> rest = new ArrayList<Character>(originalSet);
+			List<Character> rest = new LinkedList<Character>(originalSet);
 			originalSet.add(i, head);
 			for (List<Character> set : powerList(rest)) {
 				List<Character> newSet = new ArrayList<Character>();

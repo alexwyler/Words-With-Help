@@ -12,23 +12,31 @@ public class PlayingBoard {
 	Character[][] playedLetters = null;
 	BoardDescription board;
 	Dictionary dict;
-	int numPlaysCommitted = 0;
+	boolean empty = true;
 
 	List<Point> pendingPoints = new ArrayList<Point>();
 
 	public PlayingBoard(BoardDescription board, Dictionary dict) {
-		this.board = board;
-		playedLetters = new Character[board.getWidth()][board.getHeight()];
-		this.dict = dict;
+		init(board, dict, new Character[board.getWidth()][board.getHeight()]);
 	}
 
 	public PlayingBoard(BoardDescription board, Dictionary dict,
-			Character[][] current, int numTurns) {
+			Character[][] current) {
+		init(board, dict, current);
+	}
+
+	private void init(BoardDescription board, Dictionary dict,
+			Character[][] current) {
 		this.board = board;
-		playedLetters = new Character[board.getWidth()][board.getHeight()];
 		this.dict = dict;
-		playedLetters = current;
-		numPlaysCommitted = numTurns;
+		this.playedLetters = current;
+		for (int x = 0; x < playedLetters.length; x++) {
+			for (int y = 0; y < playedLetters[x].length; y++) {
+				if (playedLetters[x][y] != null) {
+					empty = false;
+				}
+			}
+		}
 	}
 
 	public void placeLetter(Point p, char c) throws InvalidPlayException {
@@ -50,34 +58,43 @@ public class PlayingBoard {
 		}
 	}
 
-	public void assertPendingIsValid() throws InvalidPlayException,
-			GameStateException {
+	public String getPendingViolation() throws GameStateException {
+		if (pendingPoints.isEmpty()) {
+			return "Must play tiles";
+		}
+
 		List<List<Point>> createdWords;
 		createdWords = getCreatedWords();
 
-		boolean wordIncludesExistingLetter = false;
-		if (numPlaysCommitted > 0) {
-			wordIncludesExistingLetter = true;
-		}
-		for (List<Point> word : createdWords) {
-			orderLetters(word);
-			String wordStr = wordToString(word);
-			if (!dict.isInDictionary(wordStr)) {
-				throw new InvalidPlayException("'" + wordStr
-						+ "' is not a valid word");
+		if (empty) {
+			if (createdWords.size() != 1) {
+				return "Must create exactly one word on first turn";
 			}
+			Point center = new Point(board.getWidth() / 2,
+					board.getHeight() / 2);
+			if (!createdWords.get(0).contains(center)) {
+				return "Must play across center tile on first turn";
+			}
+		} else {
+			boolean wordIncludesExistingLetter = false;
+			for (List<Point> word : createdWords) {
+				orderLetters(word);
+				String wordStr = wordToString(word);
+				if (!dict.isInDictionary(wordStr)) {
+					return "'" + wordStr + "' is not a valid word";
+				}
 
-			for (Point point : word) {
-				if (!pendingPoints.contains(point)) {
-					wordIncludesExistingLetter = true;
-					break;
+				for (Point point : word) {
+					if (!pendingPoints.contains(point)) {
+						wordIncludesExistingLetter = true;
+						break;
+					}
 				}
 			}
-		}
 
-		if (!wordIncludesExistingLetter) {
-			throw new InvalidPlayException(
-					"Word is formed without using any pre-existing letters");
+			if (!wordIncludesExistingLetter) {
+				return "Word is formed without using any pre-existing letters";
+			}
 		}
 
 		int x = pendingPoints.get(0).x;
@@ -94,8 +111,16 @@ public class PlayingBoard {
 		}
 
 		if (!(verticalRow || horizontalRow)) {
-			throw new InvalidPlayException(
-					"Must play letters in a straight line, horizontally or vertically");
+			return "Must play letters in a straight line, horizontally or vertically";
+		}
+		return null;
+	}
+
+	public void assertPendingIsValid() throws InvalidPlayException,
+			GameStateException {
+		String violation = getPendingViolation();
+		if (violation != null) {
+			throw new InvalidPlayException(violation);
 		}
 	}
 
@@ -108,7 +133,11 @@ public class PlayingBoard {
 		return ret;
 	}
 
-	private void orderLetters(List<Point> word) {
+	public Character letterAt(Point p) {
+		return playedLetters[p.x][p.y];
+	}
+
+	public static void orderLetters(List<Point> word) {
 		Collections.sort(word, new Comparator<Point>() {
 
 			@Override
@@ -198,7 +227,7 @@ public class PlayingBoard {
 		assertPendingIsValid();
 		int score = scorePending();
 		pendingPoints = new ArrayList<Point>();
-		numPlaysCommitted++;
+		empty = false;
 		return score;
 	}
 
@@ -224,7 +253,7 @@ public class PlayingBoard {
 		}
 		return score;
 	}
-	
+
 	private int scoreWord(List<Point> word) {
 		Space wordMod = null;
 		int score = 0;
@@ -249,6 +278,10 @@ public class PlayingBoard {
 			score *= 2;
 		} else if (wordMod == Space.TRIPLE_WORD) {
 			score *= 3;
+		}
+
+		if (pendingPoints.size() >= board.numTilesForScrabble()) {
+			score += board.scrabbleBonus();
 		}
 		return score;
 	}
@@ -277,20 +310,16 @@ public class PlayingBoard {
 		this.dict = dict;
 	}
 
-	public int getNumPlaysCommitted() {
-		return numPlaysCommitted;
-	}
-
-	public void setNumPlaysCommitted(int numPlaysCommitted) {
-		this.numPlaysCommitted = numPlaysCommitted;
-	}
-
 	public List<Point> getPendingPoints() {
 		return pendingPoints;
 	}
 
 	public void setPendingPoints(List<Point> pendingPoints) {
 		this.pendingPoints = pendingPoints;
+	}
+
+	public boolean isBoardEmpty() {
+		return empty;
 	}
 
 	public List<Point> getAllPoints() {
