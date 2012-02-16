@@ -71,7 +71,7 @@ function sortByScore(a, b) {
 function buildLinks(words) {
   var links = "";
   for (var j = 0; j < words.length; j++) {
-    links += "<a target=\"_self\" " +
+    links += "<a target=\"_blank\" " +
       "href=\"https://www.google.com/search?btnG=1&pws=0&q=define:" + words[j] + "\">" +
       words[j] + "</a>&nbsp;";
   }
