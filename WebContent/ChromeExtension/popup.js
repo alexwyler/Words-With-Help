@@ -62,9 +62,11 @@ function loadOption(move) {
   $("#points").html(move.score);
   for (var i in move.plays) {
     if (move.plays[i].blankLetter) {
-      $("#" + move.plays[i].y + "_" + move.plays[i].x).html(move.plays[i].letter).addClass("blue");
+      $("tr[row=\"" + move.plays[i].y + "\"]").children("td[col=\"" + move.plays[i].x + "\"]")
+        .html("<div class='blankMove'>" + move.plays[i].letter + "<div/>").addClass("active");
     }
-    $("#" + move.plays[i].y + "_" + move.plays[i].x).html(move.plays[i].letter).addClass("red");
+    $("tr[row=\"" + move.plays[i].y + "\"]").children("td[col=\"" + move.plays[i].x + "\"]")
+      .html("<div class='move'>" + move.plays[i].letter + "<div/>").addClass("active");
   }
 }
 
@@ -72,10 +74,10 @@ function clearBoard() {
   $('#scoreContainer').hide();
   for (var i = 0; i < 15; i++) {
     for (var j = 0; j < 15; j++) {
-      var letter = board[j][i];
-      letter = letter == null ? "_" : letter;
-      tile = $("#" + i + "_" + j);
-      tile.removeClass("red");
+      var letter = board[i][j];
+      letter = letter == null ? " " : letter;
+      tile = $("tr[row=\"" + j + "\"]").children("td[col=\"" + i + "\"]");
+      tile.removeClass("active");
       tile.html(letter);
     }
   }

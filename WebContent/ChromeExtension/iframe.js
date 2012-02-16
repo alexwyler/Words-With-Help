@@ -15,7 +15,7 @@ function search() {
   for (var i = 0; i < 7; i++) {
     var letter = game.find(".rack_space_" + i).find(".letter").html();
     if (letter == null) {
-      if (game.find(".rack_space_" + i).find(".points-0")) {
+      if (game.find(".rack_space_" + i).find(".points-0").length > 0) {
         letter = "*";
       } else {
         missing.push(i);
