@@ -65,7 +65,7 @@ public abstract class PlaySet {
 	public String toString() {
 		String str = "[";
 		for (Point p : points) {
-			str += "(" + p.x + "," + p.y + ")=>'" + getLetter(p).c + "', ";
+			str += "(" + p.x + "," + p.y + ")=>'" + getLetter(p) + "', ";
 		}
 		str += "]";
 		return str;

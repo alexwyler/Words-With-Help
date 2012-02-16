@@ -80,7 +80,12 @@ public class WordsWithFriendsBoard extends BoardDescription {
 		if (t.wildcard || t.isBlank()) {
 			return 0;
 		}
-		return points.get(Character.toUpperCase(t.c));
+		try {
+			return Character.toUpperCase(t.c);
+		} catch (RuntimeException e) {
+			System.out.print("Unable to score tile " + t);
+			throw e;
+		}
 	}
 
 	@Override

@@ -15,7 +15,6 @@ import com.alexwyler.wwc.Point;
 
 import com.alexwyler.wwc.Tile;
 
-
 public class NaiveChooser extends PlayChooser {
 
 	PlayingBoard game;
@@ -32,7 +31,6 @@ public class NaiveChooser extends PlayChooser {
 
 	@Override
 	public List<PlayOption> getOptions() throws GameStateException {
-		allAnagrams = Anagramer.powerList(tiles);
 		Set<Point> testedPoints = new HashSet<Point>();
 		Set<PlaySet> moves = new HashSet<PlaySet>();
 		List<Point> preExisting = game.getAllPoints();
@@ -40,6 +38,7 @@ public class NaiveChooser extends PlayChooser {
 			preExisting.add(new Point(game.getBoard().getWidth() / 2, game
 					.getBoard().getHeight() / 2));
 		}
+		allAnagrams = Anagramer.powerList(tiles);
 		LinkedList<Point> pointsToCheck = new LinkedList<Point>();
 		for (Point point : preExisting) {
 			pointsToCheck.add(point);
@@ -60,6 +59,7 @@ public class NaiveChooser extends PlayChooser {
 						} else {
 							moves.add(move);
 						}
+						System.out.println(point + " > " + move);
 						try {
 							game.placeLetters(move);
 							if (game.getPendingViolation() == null) {
@@ -82,15 +82,12 @@ public class NaiveChooser extends PlayChooser {
 	public List<PlaySet> getAllAvailableMoves(Point point) {
 		List<PlaySet> moves = new ArrayList<PlaySet>();
 		int j;
-		long cacheTime = 0;
-		long nonCacheTime = 0;
 		for (List<Tile> anagram : allAnagrams) {
 			for (int i = 0; i <= anagram.size(); i++) {
 				PlaySet downCachedVal = new MapPlaySet();
 				PlaySet leftCachedVal = new MapPlaySet();
 				PlaySet rightCachedVal = new MapPlaySet();
 				PlaySet upCachedVal = new MapPlaySet();
-				long time1 = System.currentTimeMillis();
 
 				// place tiles above
 				Point placePoint = new Point(point.x, point.y);
@@ -106,8 +103,6 @@ public class NaiveChooser extends PlayChooser {
 					placePoint = new Point(placePoint.x, placePoint.y - 1);
 				}
 
-				long time2 = System.currentTimeMillis();
-
 				// place tiles below
 				placePoint = new Point(point.x, point.y + 1);
 				toPlace = anagram.subList(i, anagram.size());
@@ -121,10 +116,6 @@ public class NaiveChooser extends PlayChooser {
 					}
 					placePoint = new Point(placePoint.x, placePoint.y + 1);
 				}
-
-				long time3 = System.currentTimeMillis();
-				cacheTime += time2 - time1;
-				nonCacheTime += time3 - time2;
 
 				// place tiles to the left
 				placePoint = new Point(point.x, point.y);
@@ -153,6 +144,9 @@ public class NaiveChooser extends PlayChooser {
 					}
 					placePoint = new Point(placePoint.x + 1, placePoint.y);
 				}
+
+				System.out.println("right: " + rightCachedVal);
+				System.out.println("left: " + leftCachedVal);
 
 				PlaySet horiz = rightCachedVal.merge(leftCachedVal);
 				PlayingBoard.orderLetters(horiz.getPoints());

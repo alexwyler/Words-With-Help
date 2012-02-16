@@ -31,8 +31,7 @@ public class MapPlaySet extends PlaySet {
 
 	@Override
 	protected void _place(Point p, Tile c) {
-		// TODO Auto-generated method stub
-		
+		characters.put(p, c);
 	}
 
 }

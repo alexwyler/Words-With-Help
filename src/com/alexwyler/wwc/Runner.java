@@ -21,7 +21,6 @@ public class Runner {
 		
 		List<Tile> chars = new ArrayList<Tile>();
 		chars.add(new Tile('t'));
-		chars.add(new Tile('o'));
 		
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();
