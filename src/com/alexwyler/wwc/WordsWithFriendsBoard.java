@@ -30,34 +30,34 @@ public class WordsWithFriendsBoard extends BoardDescription {
 		spaces[7][11] = Space.DOUBLE_WORD;
 	}
 
-	private static Map<Tile, Integer> points = new HashMap<Tile, Integer>();
+	private static Map<Character, Integer> points = new HashMap<Character, Integer>();
 	static {
-		points.put(new Tile('A'), 1);
-		points.put(new Tile('B'), 4);
-		points.put(new Tile('C'), 4);
-		points.put(new Tile('D'), 2);
-		points.put(new Tile('E'), 1);
-		points.put(new Tile('F'), 4);
-		points.put(new Tile('G'), 3);
-		points.put(new Tile('H'), 3);
-		points.put(new Tile('I'), 1);
-		points.put(new Tile('J'), 10);
-		points.put(new Tile('K'), 5);
-		points.put(new Tile('L'), 2);
-		points.put(new Tile('M'), 4);
-		points.put(new Tile('N'), 2);
-		points.put(new Tile('O'), 1);
-		points.put(new Tile('P'), 4);
-		points.put(new Tile('Q'), 10);
-		points.put(new Tile('R'), 1);
-		points.put(new Tile('S'), 1);
-		points.put(new Tile('T'), 1);
-		points.put(new Tile('U'), 2);
-		points.put(new Tile('V'), 5);
-		points.put(new Tile('W'), 4);
-		points.put(new Tile('X'), 8);
-		points.put(new Tile('Y'), 3);
-		points.put(new Tile('Z'), 10);
+		points.put('A', 1);
+		points.put('B', 4);
+		points.put('C', 4);
+		points.put('D', 2);
+		points.put('E', 1);
+		points.put('F', 4);
+		points.put('G', 3);
+		points.put('H', 3);
+		points.put('I', 1);
+		points.put('J', 10);
+		points.put('K', 5);
+		points.put('L', 2);
+		points.put('M', 4);
+		points.put('N', 2);
+		points.put('O', 1);
+		points.put('P', 4);
+		points.put('Q', 10);
+		points.put('R', 1);
+		points.put('S', 1);
+		points.put('T', 1);
+		points.put('U', 2);
+		points.put('V', 5);
+		points.put('W', 4);
+		points.put('X', 8);
+		points.put('Y', 3);
+		points.put('Z', 10);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class WordsWithFriendsBoard extends BoardDescription {
 			return 0;
 		}
 		try {
-			return Character.toUpperCase(t.c);
+			return points.get(Character.toUpperCase(t.c));
 		} catch (RuntimeException e) {
 			System.out.print("Unable to score tile " + t);
 			throw e;

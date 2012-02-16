@@ -57,7 +57,7 @@ public abstract class PlaySet {
 	public String toWord() {
 		StringBuffer buffer = new StringBuffer();
 		for (Point p : points) {
-			buffer.append(getLetter(p));
+			buffer.append(getLetter(p).c);
 		}
 		return buffer.toString();
 	}
@@ -77,6 +77,37 @@ public abstract class PlaySet {
 
 	public void setPoints(List<Point> points) {
 		this.points = points;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		for (Point point : points) {
+			result += point.hashCode() * getLetter(point).hashCode();
+		}
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlaySet other = (PlaySet) obj;
+		if (points == null) {
+			if (other.points != null)
+				return false;
+		} else {
+			for (Point point : points) {
+				if (!getLetter(point).equals(other.getLetter(point))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }
