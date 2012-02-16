@@ -67,6 +67,16 @@ function sortByScore(a, b) {
   return b.score - a.score;
 }
 
+function buildLinks(words) {
+  var links = "";
+  for (var j = 0; j < words.length; j++) {
+    links += "<a target=\"_self\" " +
+      "href=\"https://www.google.com/search?btnG=1&pws=0&q=define:" + words[j] + "\">" +
+      words[j] + "</a>&nbsp;";
+  }
+  return links;
+}
+
 function loadMoves() {
   request = {
     board : board,
@@ -102,7 +112,7 @@ function loadMoves() {
           $("#moveOptions").append(
             "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
               "<td>" + options[i].score + "</td>" + 
-              "<td>" + "word, words" + "</td>" + 
+              "<td>" + options[i].words + "</td>" + 
             "</tr>"
           );
         }
@@ -131,7 +141,7 @@ function selectOption(idx) {
   clearBoard();
   $("#currentSelection").html(
     "<td>" + options[idx].score + "</td>" +
-    "<td>" + "wordz" + "</td>" 
+    "<td>" + buildLinks(options[idx].words) + "</td>" 
   );
   loadOption(options[idx]);
 }
@@ -143,12 +153,12 @@ function loadOption(move) {
     var letter = move.plays[i].letter.toUpperCase();
     if (move.plays[i].blankLetter) {
       $("tr[row=\"" + move.plays[i].y + "\"]").children(
-          "td[col=\"" + move.plays[i].x + "\"]").html(
-              "<div class='blankMove'>" + letter + "<div/>").addClass("active");
+        "td[col=\"" + move.plays[i].x + "\"]").html(
+          "<div class='blankMove'>" + letter + "<div/>").addClass("active");
     }
     $("tr[row=\"" + move.plays[i].y + "\"]").children(
-        "td[col=\"" + move.plays[i].x + "\"]").html(
-            "<div class='move'>" + letter + "<div/>").addClass("active");
+      "td[col=\"" + move.plays[i].x + "\"]").html(
+        "<div class='move'>" + letter + "<div/>").addClass("active");
   }
 }
 
