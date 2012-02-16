@@ -5,7 +5,8 @@ var rack;
 var loading = false;
 
 //var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
-var url = "http://127.0.0.1:8080/WordsWithCheats/";
+//var url = "http://127.0.0.1:8080/WordsWithCheats/";
+var url = "http://172.25.100.80:8080/WordsWithCheats/";
 
 
 function find(test) {
@@ -28,6 +29,7 @@ function find(test) {
       [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
     ];
+
     options = [];
     loadingGif = "<img src='loading.gif'/>";
     status = $("#status").html("Finding Moves...<br/>" + loadingGif);
@@ -52,7 +54,7 @@ function find(test) {
             tile = tile == null ? "&nbsp;" : tile.toUpperCase();
             $("#rack_" + i).html(tile);
           }
-          clearBoard();
+//          clearBoard();
           loadMoves();
         });
     chrome.tabs.executeScript(
@@ -63,6 +65,10 @@ function find(test) {
   }
 }
 find(true);
+
+function sortByScore(a, b) {
+  return b.score - a.score;
+}
 
 function loadMoves() {
   request = {
@@ -92,20 +98,23 @@ function loadMoves() {
         $("#status").html(result.error);
       } else {
         options = options.concat(result.options);
-        for ( var i = 0; i < result.options.length; i++) {
-          $("#options").append(
-              "<tr onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
-              "<td>" + result.options[i].score + "<td/>" + 
-              "<td>" + word + "<td/>" + 
-              "</tr>"
+        options.sort(sortByScore);
+        options = options.splice(0, 5);
+        $(".option").remove();
+        for ( var i = 0; i < options.length; i++) {
+          $("#moveOptions").append(
+            "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
+              "<td>" + options[i].score + "</td>" + 
+              "<td>" + "word" + "</td>" + 
+            "</tr>"
           );
         }
         if (options.length > 0) {
           $("#status").html("Moves Found!  Getting more...");
           curOptionIdx = 0;
-          $("#option" + curOptionIdx).addClass("selected");
-          $("#score" + curOptionIdx).addClass("selected");
-          loadOption(options[curOptionIdx]);
+          // TODO clean me
+          //$("#option" + curOptionIdx).addClass("selected");
+          //loadOption(options[curOptionIdx]);
         }
         if (result.status == 'more') {
           setTimeout(loadMoves, 500);
@@ -128,10 +137,8 @@ function loadMoves() {
 function selectOption(idx) {
   clearBoard();
   $("#option" + curOptionIdx).removeClass("selected");
-  $("#score" + curOptionIdx).removeClass("selected");
   curOptionIdx = idx;
   $("#option" + curOptionIdx).addClass("selected");
-  $("#score" + curOptionIdx).addClass("selected");
   loadOption(options[curOptionIdx]);
 }
 
