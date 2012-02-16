@@ -61,7 +61,7 @@ function find(test) {
       });
   }
 }
-find(true);
+find();
 
 function sortByScore(a, b) {
   return b.score - a.score;
@@ -96,13 +96,13 @@ function loadMoves() {
       } else {
         options = options.concat(result.options);
         options.sort(sortByScore);
-        options = options.splice(0, 5);
+        options = options.splice(0, 12);
         $(".option").remove();
         for ( var i = 0; i < options.length; i++) {
           $("#moveOptions").append(
             "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
-              "<td>" + options[i].score + "</td>" + 
-              "<td>" + "word, words" + "</td>" + 
+              "<td width='20%'>" + options[i].score + "</td>" + 
+              "<td width='80%'>" + "word, words" + "</td>" + 
             "</tr>"
           );
         }
@@ -130,8 +130,8 @@ function loadMoves() {
 function selectOption(idx) {
   clearBoard();
   $("#currentSelection").html(
-    "<td>" + options[idx].score + "</td>" +
-    "<td>" + "wordz" + "</td>" 
+    "<td width='20%'>" + options[idx].score + "</td>" +
+    "<td width='80%'>" + "wordz" + "</td>" 
   );
   loadOption(options[idx]);
 }

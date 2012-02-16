@@ -1,6 +1,7 @@
 body {
   width: 360px;
   font-family: monospace;
+  overflow-y: hidden;
 }
 
 #scoreContainer,
@@ -10,7 +11,8 @@ body {
 
 #moveOptions,
 #board,
-#rack {
+#rack,
+#moveOptionsHeader {
   border: 1px solid black;
   border-spacing: 0px;
 }
@@ -69,15 +71,15 @@ body {
   cursor: arrow;
 }
 
-#moveOptions {
+#moveOptions, #moveOptionsHeader {
   width: 300px;
 }
 
-#moveOptions tr {
+#moveOptions tr, #moveOptionsHeader tr {
   cursor: pointer;
 }
 
-#moveOptions td {
+#moveOptions td, #moveOptionsHeader td {
   border: 1px solid black;
   padding: 2px;
   font-size: 15px;
@@ -104,6 +106,6 @@ body {
 }
 
 .overflow {
-  height: 160px;
+  height: 110px;
   overflow-y: scroll; 
 }
