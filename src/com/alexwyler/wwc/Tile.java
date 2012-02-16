@@ -30,15 +30,25 @@ public class Tile {
 
 	@Override
 	public int hashCode() {
-		return (int) c + (wildcard ? Integer.MAX_VALUE >> 1 : 0);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + c;
+		result = prime * result + (wildcard ? 1231 : 1237);
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		Tile other = (Tile) obj;
 		if (c != other.c)
+			return false;
+		if (wildcard != other.wildcard)
 			return false;
 		return true;
 	}

@@ -81,11 +81,9 @@ public abstract class PlaySet {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((points == null) ? 0 : points.hashCode());
 		for (Point point : points) {
-			result += getLetter(point).hashCode();
+			result += point.hashCode() * getLetter(point).hashCode();
 		}
 		return result;
 	}
@@ -102,8 +100,13 @@ public abstract class PlaySet {
 		if (points == null) {
 			if (other.points != null)
 				return false;
-		} else if (!points.equals(other.points))
-			return false;
+		} else {
+			for (Point point : points) {
+				if (!getLetter(point).equals(other.getLetter(point))) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 

@@ -21,8 +21,13 @@ public class Runner {
 		
 		List<Tile> chars = new ArrayList<Tile>();
 		chars.add(new Tile('a'));
-		chars.add(new Tile('b'));
-		chars.add(new Tile('b'));
+		chars.add(new Tile('d'));
+		chars.add(new Tile('e'));
+		chars.add(new Tile('f'));
+		chars.add(new Tile('c'));
+		chars.add(new Tile('d'));
+		chars.add(new Tile('q'));
+		chars.add(new Tile('x'));
 		
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();
@@ -30,7 +35,7 @@ public class Runner {
 		if (!options.isEmpty()) {
 			for (PlayOption option : options) {
 				game.placeLetters(option.getMove());
-				game.printBoard(true);
+				//game.printBoard(true);
 				game.discardPending();
 			}
 		} else {

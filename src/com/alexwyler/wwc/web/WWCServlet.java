@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -122,7 +124,8 @@ public class WWCServlet extends HttpServlet {
 				PlayChooser chooser = new NaiveChooser(game, rackChars);
 
 				if (COMMAND_START.equals(cmd)) {
-					List<PlayOption> options = chooser.getOptions();
+					Collection<PlayOption> options = new HashSet<PlayOption>(
+							chooser.getOptions());
 					responseJSON = encodeOptions(options);
 				} else {
 					request.getSession().setAttribute("async-error", null);
@@ -153,7 +156,8 @@ public class WWCServlet extends HttpServlet {
 				List<PlayOption> options = chooser.getCurrentOptions();
 				List<PlayOption> toReturn = options.subList(lastNumSent,
 						options.size());
-				lastNumSent = options.size();
+				request.getSession().setAttribute("last-num-sent",
+						options.size());
 				responseJSON = encodeOptions(toReturn);
 				if (complete) {
 					responseJSON.put(PARAM_STATUS, STATUS_DONE);
@@ -198,7 +202,7 @@ public class WWCServlet extends HttpServlet {
 		}
 	}
 
-	public JSONObject encodeOptions(List<PlayOption> options) {
+	public JSONObject encodeOptions(Collection<PlayOption> options) {
 		Map<String, Object> mainResp = new HashMap<String, Object>();
 		List<Map<String, Object>> plays = new ArrayList<Map<String, Object>>();
 
