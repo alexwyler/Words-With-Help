@@ -4,30 +4,64 @@ var board;
 var rack;
 var loading = false;
 
-var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
-// var url = "http://127.0.0.1:8080/WordsWithCheats/";
+//var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
+var url = "http://127.0.0.1:8080/WordsWithCheats/";
 
-function find() {
-  chrome.extension.onRequest
-      .addListener(function(request, sender, sendResponse) {
-        console.log(request);
-        rack = request.rack;
-        board = request.board;
-        options = [];
-        loadingGif = "<img src='loading.gif'/>";
-        status = $("#status").html("Finding Moves...<br/>" + loadingGif);
-        for ( var i = 0; i < 7; i++) {
-          $("#rack_" + i).html(request.rack[i]);
-        }
-        clearBoard();
-        loadMoves();
+function find(test) {
+  if (test) {
+    rack = ['w', 'o', 'r', 'd', 'z', 'f', 'u'];
+    board = [
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, 'p', 'e', 'n', 's', null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+    ];
+    options = [];
+    loadingGif = "<img src='loading.gif'/>";
+    status = $("#status").html("Finding Moves...<br/>" + loadingGif);
+    for ( var i = 0; i < 7; i++) {
+      var tile = rack[i];
+      tile = tile == null ? "&nbsp;" : tile.toUpperCase();
+      $("#rack_" + i).html(tile);
+    }
+    clearBoard();
+    loadMoves();
+  } else {
+    chrome.extension.onRequest
+      .addListener(
+        function(request, sender, sendResponse) {
+          rack = request.rack;
+          board = request.board;
+          options = [];
+          loadingGif = "<img src='loading.gif'/>";
+          status = $("#status").html("Finding Moves...<br/>" + loadingGif);
+          for ( var i = 0; i < 7; i++) {
+            var tile = rack[i];
+            tile = tile == null ? "&nbsp;" : tile.toUpperCase();
+            $("#rack_" + i).html(tile);
+          }
+          clearBoard();
+          loadMoves();
+        });
+    chrome.tabs.executeScript(
+      null, {
+        allFrames : true,
+        file : "iframe.js"
       });
-  chrome.tabs.executeScript(null, {
-    allFrames : true,
-    file : "iframe.js"
-  });
+  }
 }
-find();
+find(true);
 
 function loadMoves() {
   request = {
@@ -132,7 +166,8 @@ function clearBoard() {
     for ( var j = 0; j < 15; j++) {
       var letter = board[i][j];
       letter = letter == null ? "&nbsp;" : letter.toUpperCase();
-      tile = $("tr[row=\"" + j + "\"]").children("td[col=\"" + i + "\"]");
+      var tile = $("tr[row=\"" + j + "\"]").children("td[col=\"" + i + "\"]");
+      console.log(tile);
       tile.removeClass("active");
       tile.html(letter);
     }

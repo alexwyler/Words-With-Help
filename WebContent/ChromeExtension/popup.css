@@ -4,9 +4,15 @@ body {
   font-family: monospace;
 }
 
+#scoreContainer,
+#status {
+  font-size: 16px;
+}
+
 #moveOptions,
 #board,
 #rack {
+  border: 1px solid black;
   border-spacing: 0px;
 }
 
@@ -19,7 +25,7 @@ body {
 }
 
 #rack td {
-  border: 2px solid black;
+  border: 1px solid black;
 }
 
 #board td.active {
@@ -44,7 +50,6 @@ body {
 
 #points {
   color: red;
-  font-size: 16px;
 }
 
 #options-nav a {
