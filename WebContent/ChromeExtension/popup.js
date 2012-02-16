@@ -17,7 +17,8 @@ function find() {
       clearBoard();
 
       $.ajax({
-	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/",
+	  //url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/",
+    	  url: "http://127.0.0.1:8080/WordsWithCheats/",
       type: "POST",
 	  data: JSON.stringify(request),
 	  dataType: "json",

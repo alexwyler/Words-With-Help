@@ -1,11 +1,11 @@
 package com.alexwyler.wwc;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+
+import com.alexwyler.wwc.chooser.PlaySet;
 
 public class PlayingBoard {
 
@@ -43,18 +43,20 @@ public class PlayingBoard {
 		if (!inBounds(p)) {
 			throw new InvalidPlayException("Letter '" + c
 					+ "' placed out of bounds (" + p.x + "," + p.y + ")");
-		} else if (playedLetters[p.x][p.y] != null) {
+		}
+		Character existing = playedLetters[p.x][p.y];
+		if (existing != null) {
 			throw new InvalidPlayException("Letter '" + c
-					+ "' placed on existing letter (" + p.x + "," + p.y + ")");
+					+ "' placed on existing letter '" + existing + "' (" + p.x
+					+ "," + p.y + ")");
 		}
 		pendingPoints.add(p);
 		playedLetters[p.x][p.y] = c;
 	}
 
-	public void placeLetters(Map<Point, Character> letters)
-			throws InvalidPlayException {
-		for (Point point : letters.keySet()) {
-			placeLetter(point, letters.get(point));
+	public void placeLetters(PlaySet playSet) throws InvalidPlayException {
+		for (Point point : playSet.getPoints()) {
+			placeLetter(point, playSet.getLetter(point));
 		}
 	}
 

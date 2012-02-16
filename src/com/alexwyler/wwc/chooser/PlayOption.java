@@ -1,14 +1,12 @@
 package com.alexwyler.wwc.chooser;
 
-import java.awt.Point;
-import java.util.Map;
 
 public class PlayOption implements Comparable<PlayOption> {
-	public Map<Point, Character> getMove() {
+	public PlaySet getMove() {
 		return move;
 	}
 
-	public void setMove(Map<Point, Character> move) {
+	public void setMove(PlaySet move) {
 		this.move = move;
 	}
 
@@ -20,11 +18,11 @@ public class PlayOption implements Comparable<PlayOption> {
 		this.score = score;
 	}
 
-	Map<Point, Character> move;
+	PlaySet move;
 
 	int score;
 
-	public PlayOption(Map<Point, Character> move, int score) {
+	public PlayOption(PlaySet move, int score) {
 		this.move = move;
 		this.score = score;
 	}

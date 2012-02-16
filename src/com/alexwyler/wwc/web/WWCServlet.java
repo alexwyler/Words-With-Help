@@ -1,6 +1,5 @@
 package com.alexwyler.wwc.web;
 
-import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,6 +24,7 @@ import com.alexwyler.wwc.BoardDescription;
 import com.alexwyler.wwc.Dictionary;
 import com.alexwyler.wwc.GameStateException;
 import com.alexwyler.wwc.PlayingBoard;
+import com.alexwyler.wwc.Point;
 import com.alexwyler.wwc.WordsWithFriendsBoard;
 import com.alexwyler.wwc.chooser.NaiveChooser;
 import com.alexwyler.wwc.chooser.PlayChooser;
@@ -38,6 +38,7 @@ public class WWCServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	JSONObject responseJSON;
+
 	/**
 	 * Default constructor.
 	 */
@@ -148,8 +149,8 @@ public class WWCServlet extends HttpServlet {
 		for (PlayOption option : options) {
 			Map<String, Object> playInfo = new HashMap<String, Object>();
 			List<Map<String, Object>> moves = new ArrayList<Map<String, Object>>();
-			for (Point point : option.getMove().keySet()) {
-				Character c = option.getMove().get(point);
+			for (Point point : option.getMove().getPoints()) {
+				Character c = option.getMove().getLetter(point);
 				Map<String, Object> move = new HashMap<String, Object>();
 				move.put("x", point.x);
 				move.put("y", point.y);

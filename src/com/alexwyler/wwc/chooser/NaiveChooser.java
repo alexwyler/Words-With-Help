@@ -1,18 +1,16 @@
 package com.alexwyler.wwc.chooser;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.alexwyler.wwc.GameStateException;
 import com.alexwyler.wwc.InvalidPlayException;
 import com.alexwyler.wwc.PlayingBoard;
+import com.alexwyler.wwc.Point;
 
 public class NaiveChooser extends PlayChooser {
 
@@ -20,7 +18,7 @@ public class NaiveChooser extends PlayChooser {
 	List<Character> tiles;
 	Set<List<Character>> allAnagrams;
 	HashSet<Point> testedPoints = new HashSet<Point>();
-	HashSet<Map<Point, Character>> moves = new HashSet<Map<Point, Character>>();
+	HashSet<PlaySet> moves = new HashSet<PlaySet>();
 
 	public NaiveChooser(PlayingBoard game, List<Character> tiles) {
 		this.game = game;
@@ -49,13 +47,8 @@ public class NaiveChooser extends PlayChooser {
 					continue;
 				} else {
 					testedPoints.add(pointToCheck);
-					AvailabilityInfo availInfo = AvailabilityInfo
-							.getAvailabilityInfo(game, pointToCheck);
-					long time1 = System.currentTimeMillis();
-					List<Map<Point, Character>> availableMoves = getAllAvailableMoves(
-							availInfo, pointToCheck);
-					long time2 = System.currentTimeMillis();
-					for (Map<Point, Character> move : availableMoves) {
+					List<PlaySet> availableMoves = getAllAvailableMoves(pointToCheck);
+					for (PlaySet move : availableMoves) {
 						if (moves.contains(move)) {
 							continue;
 						} else {
@@ -68,12 +61,10 @@ public class NaiveChooser extends PlayChooser {
 								options.add(new PlayOption(move, score));
 							}
 						} catch (InvalidPlayException e) {
-							// Something went wrong
 							e.printStackTrace();
 						}
 						game.discardPending();
 					}
-					System.out.println("time finding moves: " + (time2 - time1));
 				}
 			}
 		}
@@ -83,25 +74,34 @@ public class NaiveChooser extends PlayChooser {
 		return options;
 	}
 
-	public List<Map<Point, Character>> getAllAvailableMoves(
-			AvailabilityInfo availInfo, Point point) {
-		List<Map<Point, Character>> moves = new ArrayList<Map<Point, Character>>();
+	public List<PlaySet> getAllAvailableMoves(Point point) {
+		List<PlaySet> moves = new ArrayList<PlaySet>();
+		int j;
+		long cacheTime = 0;
+		long nonCacheTime = 0;
 		for (List<Character> anagram : allAnagrams) {
 			for (int i = 0; i <= anagram.size(); i++) {
-				Map<Point, Character> vert = new HashMap<Point, Character>();
+				PlaySet downCachedVal = new MapPlaySet();
+				PlaySet leftCachedVal = new MapPlaySet();
+				PlaySet rightCachedVal = new MapPlaySet();
+				PlaySet upCachedVal = new MapPlaySet();
+				long time1 = System.currentTimeMillis();
+
 				// place tiles above
 				Point placePoint = new Point(point.x, point.y);
 				List<Character> toPlace = anagram.subList(0, i);
-				int j = 0;
+				j = 0;
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
 					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
-						vert.put(placePoint, toPlace.get(j++));
+						upCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
-						vert.put(placePoint, letter);
+						upCachedVal.place(placePoint, letter);
 					}
 					placePoint = new Point(placePoint.x, placePoint.y - 1);
 				}
+
+				long time2 = System.currentTimeMillis();
 
 				// place tiles below
 				placePoint = new Point(point.x, point.y + 1);
@@ -110,14 +110,17 @@ public class NaiveChooser extends PlayChooser {
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
 					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
-						vert.put(placePoint, toPlace.get(j++));
+						downCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
-						vert.put(placePoint, letter);
+						downCachedVal.place(placePoint, letter);
 					}
 					placePoint = new Point(placePoint.x, placePoint.y + 1);
 				}
 
-				Map<Point, Character> horiz = new HashMap<Point, Character>();
+				long time3 = System.currentTimeMillis();
+				cacheTime += time2 - time1;
+				nonCacheTime += time3 - time2;
+
 				// place tiles to the left
 				placePoint = new Point(point.x, point.y);
 				toPlace = anagram.subList(0, i);
@@ -125,9 +128,9 @@ public class NaiveChooser extends PlayChooser {
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
 					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
-						horiz.put(placePoint, toPlace.get(j));
+						leftCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
-						horiz.put(placePoint, letter);
+						leftCachedVal.place(placePoint, letter);
 					}
 					placePoint = new Point(placePoint.x - 1, placePoint.y);
 				}
@@ -139,46 +142,25 @@ public class NaiveChooser extends PlayChooser {
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
 					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
-						horiz.put(placePoint, toPlace.get(j++));
+						rightCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
-						horiz.put(placePoint, letter);
+						rightCachedVal.place(placePoint, letter);
 					}
 					placePoint = new Point(placePoint.x + 1, placePoint.y);
 				}
 
-				List<Point> orderedHorizPoints = new LinkedList<Point>(
-						horiz.keySet());
-				PlayingBoard.orderLetters(orderedHorizPoints);
-				StringBuffer horizWord = new StringBuffer();
-				for (Point p : orderedHorizPoints) {
-					horizWord.append(horiz.get(p));
-				}
+				PlaySet horiz = rightCachedVal.merge(leftCachedVal);
+				PlayingBoard.orderLetters(horiz.getPoints());
 
-				if (game.getDict().isInDictionary(horizWord.toString())) {
-					for (int k = 0; k < orderedHorizPoints.size(); k++) {
-						Point p = orderedHorizPoints.get(k);
-						if (game.letterAt(p) != null) {
-							horiz.remove(p);
-						}
-					}
+				if (game.getDict().isInDictionary(horiz.toWord())) {
+					horiz.filterExistingLetters(game);
 					moves.add(horiz);
 				}
-				
-				List<Point> orderedVertPoints = new LinkedList<Point>(
-						vert.keySet());
-				PlayingBoard.orderLetters(orderedVertPoints);
-				StringBuffer vertWord = new StringBuffer();
-				for (Point p : orderedVertPoints) {
-					vertWord.append(vert.get(p));
-				}
 
-				if (game.getDict().isInDictionary(vertWord.toString())) {
-					for (int k = 0; k < orderedVertPoints.size(); k++) {
-						Point p = orderedVertPoints.get(k);
-						if (game.letterAt(p) != null) {
-							vert.remove(p);
-						}
-					}
+				PlaySet vert = downCachedVal.merge(upCachedVal);
+				PlayingBoard.orderLetters(horiz.getPoints());
+				if (game.getDict().isInDictionary(vert.toWord())) {
+					vert.filterExistingLetters(game);
 					moves.add(vert);
 				}
 			}

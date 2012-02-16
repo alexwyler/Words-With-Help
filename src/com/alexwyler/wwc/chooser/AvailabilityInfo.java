@@ -1,8 +1,7 @@
 package com.alexwyler.wwc.chooser;
 
-import java.awt.Point;
-
 import com.alexwyler.wwc.PlayingBoard;
+import com.alexwyler.wwc.Point;
 
 public class AvailabilityInfo {
 

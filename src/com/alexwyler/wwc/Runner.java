@@ -16,21 +16,20 @@ public class Runner {
 		Dictionary dict = Dictionary.getInstance(new File(
 				"WebContent/words.txt"));
 		BoardDescription board = new WordsWithFriendsBoard();
-		Character[][] current = SomeGames.test3;
+		Character[][] current = SomeGames.test2;
 		PlayingBoard game = new PlayingBoard(board, dict, current);
 		
 		game.printBoard(false);
 			
 		List<Character> chars = new ArrayList<Character>();
+		chars.add('a');
+		chars.add('b');
 		chars.add('c');
-		chars.add('h');
+		chars.add('d');
 		chars.add('e');
-		chars.add('a');
-		chars.add('t');
-		chars.add('a');
-		chars.add('h');
-		chars.add('s');
-
+		chars.add('f');
+		chars.add('g');
+		
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();
 
