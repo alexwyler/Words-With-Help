@@ -25,6 +25,7 @@ import us.monoid.json.JSONObject;
 import com.alexwyler.wwc.BoardDescription;
 import com.alexwyler.wwc.Dictionary;
 import com.alexwyler.wwc.GameStateException;
+import com.alexwyler.wwc.InvalidPlayException;
 import com.alexwyler.wwc.PlayingBoard;
 import com.alexwyler.wwc.Point;
 import com.alexwyler.wwc.Tile;
@@ -126,11 +127,12 @@ public class WWCServlet extends HttpServlet {
 				if (COMMAND_START.equals(cmd)) {
 					Collection<PlayOption> options = new HashSet<PlayOption>(
 							chooser.getOptions());
-					responseJSON = encodeOptions(options);
+					responseJSON = encodeOptions(options, game);
 				} else {
 					request.getSession().setAttribute("async-error", null);
 					request.getSession().setAttribute("chooser", chooser);
 					request.getSession().setAttribute("last-num-sent", 0);
+					request.getSession().setAttribute("game", game);
 					new Thread() {
 						@Override
 						public void run() {
@@ -158,7 +160,8 @@ public class WWCServlet extends HttpServlet {
 						options.size());
 				request.getSession().setAttribute("last-num-sent",
 						options.size());
-				responseJSON = encodeOptions(toReturn);
+				responseJSON = encodeOptions(toReturn, (PlayingBoard) request
+						.getSession().getAttribute("game"));
 				if (complete) {
 					responseJSON.put(PARAM_STATUS, STATUS_DONE);
 				} else {
@@ -174,11 +177,15 @@ public class WWCServlet extends HttpServlet {
 		} catch (GameStateException e) {
 			e.printStackTrace();
 			internalError();
+		} catch (InvalidPlayException e) {
+			e.printStackTrace();
+			internalError();
 		}
 
 		if (request.getSession().getAttribute("async-error") != null) {
 			internalError();
 		}
+		System.out.println(responseJSON.toString());
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
@@ -202,13 +209,21 @@ public class WWCServlet extends HttpServlet {
 		}
 	}
 
-	public JSONObject encodeOptions(Collection<PlayOption> options) {
+	public JSONObject encodeOptions(Collection<PlayOption> options,
+			PlayingBoard game) throws InvalidPlayException, GameStateException {
 		Map<String, Object> mainResp = new HashMap<String, Object>();
 		List<Map<String, Object>> plays = new ArrayList<Map<String, Object>>();
-
 		for (PlayOption option : options) {
 			Map<String, Object> playInfo = new HashMap<String, Object>();
 			List<Map<String, Object>> moves = new ArrayList<Map<String, Object>>();
+			game.placeLetters(option.getMove());
+			List<List<Point>> words = game.getCreatedWords();
+			List<String> createdStrings = new ArrayList<String>();
+			for (List<Point> word : words) {
+				createdStrings.add(game.wordToString(word));
+			}
+			game.discardPending();;
+			playInfo.put("words", createdStrings);
 			for (Point point : option.getMove().getPoints()) {
 				Tile t = option.getMove().getLetter(point);
 				Map<String, Object> move = new HashMap<String, Object>();
