@@ -127,7 +127,7 @@ public class PlayingBoard {
 		orderLetters(word);
 		String ret = "";
 		for (Point point : word) {
-			ret += playedLetters[point.x][point.y];
+			ret += playedLetters[point.x][point.y].c;
 		}
 		return ret;
 	}

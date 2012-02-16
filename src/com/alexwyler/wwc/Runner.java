@@ -20,7 +20,9 @@ public class Runner {
 		PlayingBoard game = new PlayingBoard(board, dict, current, 1);
 		
 		List<Tile> chars = new ArrayList<Tile>();
-		chars.add(new Tile('t'));
+		chars.add(new Tile('a'));
+		chars.add(new Tile('b'));
+		chars.add(new Tile('b'));
 		
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();

@@ -1,6 +1,7 @@
 package com.alexwyler.wwc.chooser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,9 +11,7 @@ import java.util.Set;
 import com.alexwyler.wwc.GameStateException;
 import com.alexwyler.wwc.InvalidPlayException;
 import com.alexwyler.wwc.PlayingBoard;
-
 import com.alexwyler.wwc.Point;
-
 import com.alexwyler.wwc.Tile;
 
 public class NaiveChooser extends PlayChooser {
@@ -32,7 +31,7 @@ public class NaiveChooser extends PlayChooser {
 	@Override
 	public List<PlayOption> getOptions() throws GameStateException {
 		Set<Point> testedPoints = new HashSet<Point>();
-		Set<PlaySet> moves = new HashSet<PlaySet>();
+		Collection<PlaySet> moves = new HashSet<PlaySet>();
 		List<Point> preExisting = game.getAllPoints();
 		if (preExisting.isEmpty()) {
 			preExisting.add(new Point(game.getBoard().getWidth() / 2, game
@@ -61,9 +60,11 @@ public class NaiveChooser extends PlayChooser {
 						}
 						try {
 							game.placeLetters(move);
-							if (game.getPendingViolation() == null) {
+							String vio = game.getPendingViolation();
+							if (vio == null) {
 								int score = game.scorePending();
 								options.add(new PlayOption(move, score));
+							} else {
 							}
 						} catch (InvalidPlayException e) {
 							e.printStackTrace();
@@ -147,13 +148,14 @@ public class NaiveChooser extends PlayChooser {
 				PlaySet horiz = rightCachedVal.merge(leftCachedVal);
 				PlayingBoard.orderLetters(horiz.getPoints());
 
+				PlaySet vert = downCachedVal.merge(upCachedVal);
+				PlayingBoard.orderLetters(horiz.getPoints());
+
 				if (game.getDict().isInDictionary(horiz.toWord())) {
 					horiz.filterExistingLetters(game);
 					moves.add(horiz);
 				}
 
-				PlaySet vert = downCachedVal.merge(upCachedVal);
-				PlayingBoard.orderLetters(horiz.getPoints());
 				if (game.getDict().isInDictionary(vert.toWord())) {
 					vert.filterExistingLetters(game);
 					moves.add(vert);

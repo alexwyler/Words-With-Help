@@ -7,7 +7,7 @@ public class Tile {
 	public boolean wildcard = false;
 
 	public boolean isBlank() {
-		return c == 0;
+		return c == 0 || c == '*';
 	}
 
 	public Tile(char c, boolean wildcard) {
@@ -26,6 +26,21 @@ public class Tile {
 			tile += " (wildcard)";
 		}
 		return tile;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) c + (wildcard ? Integer.MAX_VALUE >> 1 : 0);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (getClass() != obj.getClass())
+			return false;
+		Tile other = (Tile) obj;
+		if (c != other.c)
+			return false;
+		return true;
 	}
 
 }
