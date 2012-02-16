@@ -14,10 +14,14 @@ function search() {
 
   for (var i = 0; i < 7; i++) {
     var letter = game.find(".rack_space_" + i).find(".letter").html();
-    rack.push(letter);
     if (letter == null) {
-      missing.push(i);
+      if (game.find(".rack_space_" + i).find(".points-0").length > 0) {
+        letter = "*";
+      } else {
+        missing.push(i);
+      }
     }
+    rack.push(letter);
   }
 
   var board = new Array(15);

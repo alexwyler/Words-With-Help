@@ -10,17 +10,22 @@ import java.util.Set;
 import com.alexwyler.wwc.GameStateException;
 import com.alexwyler.wwc.InvalidPlayException;
 import com.alexwyler.wwc.PlayingBoard;
+
 import com.alexwyler.wwc.Point;
+
+import com.alexwyler.wwc.Tile;
+
 
 public class NaiveChooser extends PlayChooser {
 
 	PlayingBoard game;
-	List<Character> tiles;
-	Set<List<Character>> allAnagrams;
-	HashSet<Point> testedPoints = new HashSet<Point>();
-	HashSet<PlaySet> moves = new HashSet<PlaySet>();
+	List<Tile> tiles;
+	Set<List<Tile>> allAnagrams;
+	List<PlayOption> options = Collections
+			.synchronizedList(new ArrayList<PlayOption>());
+	boolean isComplete = false;
 
-	public NaiveChooser(PlayingBoard game, List<Character> tiles) {
+	public NaiveChooser(PlayingBoard game, List<Tile> tiles) {
 		this.game = game;
 		this.tiles = tiles;
 	}
@@ -28,7 +33,8 @@ public class NaiveChooser extends PlayChooser {
 	@Override
 	public List<PlayOption> getOptions() throws GameStateException {
 		allAnagrams = Anagramer.powerList(tiles);
-		List<PlayOption> options = new LinkedList<PlayOption>();
+		Set<Point> testedPoints = new HashSet<Point>();
+		Set<PlaySet> moves = new HashSet<PlaySet>();
 		List<Point> preExisting = game.getAllPoints();
 		if (preExisting.isEmpty()) {
 			preExisting.add(new Point(game.getBoard().getWidth() / 2, game
@@ -68,9 +74,8 @@ public class NaiveChooser extends PlayChooser {
 				}
 			}
 		}
-		int maxNum = Math.min(10, options.size());
 		Collections.sort(options);
-		options = options.subList(0, maxNum);
+		isComplete = true;
 		return options;
 	}
 
@@ -79,7 +84,7 @@ public class NaiveChooser extends PlayChooser {
 		int j;
 		long cacheTime = 0;
 		long nonCacheTime = 0;
-		for (List<Character> anagram : allAnagrams) {
+		for (List<Tile> anagram : allAnagrams) {
 			for (int i = 0; i <= anagram.size(); i++) {
 				PlaySet downCachedVal = new MapPlaySet();
 				PlaySet leftCachedVal = new MapPlaySet();
@@ -89,10 +94,10 @@ public class NaiveChooser extends PlayChooser {
 
 				// place tiles above
 				Point placePoint = new Point(point.x, point.y);
-				List<Character> toPlace = anagram.subList(0, i);
+				List<Tile> toPlace = anagram.subList(0, i);
 				j = 0;
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
-					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
+					Tile letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
 						upCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
@@ -108,7 +113,7 @@ public class NaiveChooser extends PlayChooser {
 				toPlace = anagram.subList(i, anagram.size());
 				j = 0;
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
-					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
+					Tile letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
 						downCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
@@ -126,7 +131,7 @@ public class NaiveChooser extends PlayChooser {
 				toPlace = anagram.subList(0, i);
 				j = 0;
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
-					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
+					Tile letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
 						leftCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
@@ -140,7 +145,7 @@ public class NaiveChooser extends PlayChooser {
 				toPlace = anagram.subList(i, anagram.size());
 				j = 0;
 				while (j < toPlace.size() && game.inBounds(placePoint)) {
-					Character letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
+					Tile letter = game.getPlayedLetters()[placePoint.x][placePoint.y];
 					if (letter == null) {
 						rightCachedVal.place(placePoint, toPlace.get(j++));
 					} else {
@@ -166,5 +171,15 @@ public class NaiveChooser extends PlayChooser {
 			}
 		}
 		return moves;
+	}
+
+	@Override
+	public List<PlayOption> getCurrentOptions() {
+		return options;
+	}
+
+	@Override
+	public boolean isComplete() {
+		return isComplete;
 	}
 }

@@ -8,7 +8,7 @@ public abstract class BoardDescription {
 	
 	public abstract Space getSpace(int x, int y);
 	
-	public abstract int getLetterValue(char c);
+	public abstract int getLetterValue(Tile c);
 	
 	public abstract int numTilesForScrabble();
 	

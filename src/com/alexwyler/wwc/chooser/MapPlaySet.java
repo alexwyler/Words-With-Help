@@ -4,33 +4,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alexwyler.wwc.Point;
+import com.alexwyler.wwc.Tile;
 
 public class MapPlaySet extends PlaySet {
 
-	private Map<Point, Character> characters = new HashMap<Point, Character>();
+	private Map<Point, Tile> characters = new HashMap<Point, Tile>();
 	
 	public MapPlaySet() {
 		super();
 	}
 	
 	@SuppressWarnings("deprecation")
-	public MapPlaySet(Map<Point, Character> cakes) {
+	public MapPlaySet(Map<Point, Tile> cakes) {
 		super(cakes);
 	}
 
 	@Override
-	public Character getLetter(Point p) {
+	public Tile getLetter(Point p) {
 		return characters.get(p);
-	}
-
-	@Override
-	protected void _place(Point p, Character c) {
-		characters.put(p, c);
 	}
 
 	@Override
 	protected void _remove(Point p) {
 		characters.remove(p);
+	}
+
+	@Override
+	protected void _place(Point p, Tile c) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

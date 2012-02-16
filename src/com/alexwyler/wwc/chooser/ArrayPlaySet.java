@@ -1,13 +1,14 @@
 package com.alexwyler.wwc.chooser;
 
 import com.alexwyler.wwc.Point;
+import com.alexwyler.wwc.Tile;
 
 public class ArrayPlaySet extends PlaySet {
 
-	private Character[][] letters = new Character[15][15];
+	private Tile[][] letters = new Tile[15][15];
 
 	@Override
-	protected void _place(Point p, Character c) {
+	protected void _place(Point p, Tile c) {
 		letters[p.x][p.y] = c;
 	}
 
@@ -17,7 +18,7 @@ public class ArrayPlaySet extends PlaySet {
 	}
 
 	@Override
-	public Character getLetter(Point p) {
+	public Tile getLetter(Point p) {
 		return letters[p.x][p.y];
 	}
 

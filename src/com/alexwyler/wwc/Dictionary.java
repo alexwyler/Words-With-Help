@@ -33,11 +33,11 @@ public class Dictionary {
 		return words.contains(string.toLowerCase().trim());
 	}
 
-	public boolean isInDictionary(List<Character> chars) {
-		String str = "";
-		for (Character c : chars) {
-			str += c;
+	public boolean isInDictionary(List<Tile> chars) {
+		StringBuffer str = new StringBuffer();
+		for (Tile t : chars) {
+			str.append(t.c);
 		}
-		return isInDictionary(str);
+		return isInDictionary(str.toString());
 	}
 }

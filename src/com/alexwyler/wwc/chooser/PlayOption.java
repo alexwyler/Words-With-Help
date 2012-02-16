@@ -1,7 +1,11 @@
 package com.alexwyler.wwc.chooser;
 
-
 public class PlayOption implements Comparable<PlayOption> {
+
+	PlaySet move;
+
+	int score;
+
 	public PlaySet getMove() {
 		return move;
 	}
@@ -17,10 +21,6 @@ public class PlayOption implements Comparable<PlayOption> {
 	public void setScore(int score) {
 		this.score = score;
 	}
-
-	PlaySet move;
-
-	int score;
 
 	public PlayOption(PlaySet move, int score) {
 		this.move = move;

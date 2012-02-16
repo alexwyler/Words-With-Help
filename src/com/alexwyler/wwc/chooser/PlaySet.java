@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import com.alexwyler.wwc.PlayingBoard;
 import com.alexwyler.wwc.Point;
+import com.alexwyler.wwc.Tile;
 
 public abstract class PlaySet {
 
@@ -17,20 +18,20 @@ public abstract class PlaySet {
 	}
 
 	@Deprecated
-	public PlaySet(Map<Point, Character> moves) {
-		for (Entry<Point, Character> move : moves.entrySet()) {
+	public PlaySet(Map<Point, Tile> moves) {
+		for (Entry<Point, Tile> move : moves.entrySet()) {
 			place(move.getKey(), move.getValue());
 		}
 	}
 
-	public abstract Character getLetter(Point p);
+	public abstract Tile getLetter(Point p);
 
-	public void place(Point p, Character c) {
+	public void place(Point p, Tile c) {
 		points.add(p);
 		_place(p, c);
 	}
 
-	protected abstract void _place(Point p, Character c);
+	protected abstract void _place(Point p, Tile c);
 
 	public void filterExistingLetters(PlayingBoard game) {
 		List<Point> filtered = new ArrayList<Point>();
@@ -64,7 +65,7 @@ public abstract class PlaySet {
 	public String toString() {
 		String str = "[";
 		for (Point p : points) {
-			str += "(" + p.x + "," + p.y + ")=>'" + getLetter(p) + "', ";
+			str += "(" + p.x + "," + p.y + ")=>'" + getLetter(p).c + "', ";
 		}
 		str += "]";
 		return str;

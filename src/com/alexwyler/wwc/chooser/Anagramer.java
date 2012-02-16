@@ -5,20 +5,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.alexwyler.wwc.Tile;
+
 public class Anagramer {
 
-	public static Set<List<Character>> powerList(List<Character> originalSet) {
-		Set<List<Character>> sets = new HashSet<List<Character>>();
+	public static Set<List<Tile>> powerList(List<Tile> originalSet) {
+		Set<List<Tile>> sets = new HashSet<List<Tile>>();
 		if (originalSet.size() == 1) {
-			sets.add(new ArrayList<Character>(originalSet));
+			Tile tile = originalSet.get(0);
+			if (tile.wildcard && tile.isBlank()) {
+				for (char c = 'a'; c <= 'z'; c++) {
+					List<Tile> wildcard = new ArrayList<Tile>();
+					wildcard.add(new Tile(c, true));
+					sets.add(wildcard);
+				}
+			} else {
+				sets.add(new ArrayList<Tile>(originalSet));
+			}
 			return sets;
 		}
 		for (int i = 0; i < originalSet.size(); i++) {
-			Character head = originalSet.remove(i);
-			List<Character> rest = new ArrayList<Character>(originalSet);
+			Tile head = originalSet.remove(i);
+			List<Tile> rest = new ArrayList<Tile>(originalSet);
 			originalSet.add(i, head);
-			for (List<Character> set : powerList(rest)) {
-				List<Character> newSet = new ArrayList<Character>();
+			for (List<Tile> set : powerList(rest)) {
+				List<Tile> newSet = new ArrayList<Tile>();
 				newSet.add(head);
 				newSet.addAll(set);
 				sets.add(newSet);
