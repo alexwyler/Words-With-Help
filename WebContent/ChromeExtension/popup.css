@@ -67,7 +67,7 @@ body {
   float: right;
 }
 
-#moveOptions #header.tr {
+#moveOptionsHeader tr {
   cursor: arrow;
 }
 
@@ -75,7 +75,7 @@ body {
   width: 300px;
 }
 
-#moveOptions tr, #moveOptionsHeader tr {
+#moveOptions tr {
   cursor: pointer;
 }
 

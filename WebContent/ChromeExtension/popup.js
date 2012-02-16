@@ -52,6 +52,7 @@ function find(test) {
             tile = tile == null ? "&nbsp;" : tile.toUpperCase();
             $("#rack_" + i).html(tile);
           }
+          clearBoard();
           loadMoves();
         });
     chrome.tabs.executeScript(
