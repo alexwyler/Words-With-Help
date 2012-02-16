@@ -10,7 +10,10 @@ body {
 
 .red {
   color: red;
-  font-weight: bold;
+}
+
+.blue {
+  color: blue;
 }
 
 .center {
@@ -18,18 +21,18 @@ body {
   text-align: center;	
 }
 
-.prev {
+#options-nav a {
   display: block;
   width: 10px;
-  float: left;
   font-size: 22px;
 }
 
+.prev {
+  float: left;
+ }
+
 .next {
-  display: block;
-  width: 10px;
   float: right;
-  font-size: 22px;
 }
 
 #rack span {
