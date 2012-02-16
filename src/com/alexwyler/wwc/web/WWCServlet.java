@@ -82,8 +82,6 @@ public class WWCServlet extends HttpServlet {
 		responseJSON = new JSONObject();
 		try {
 			requestJSON = new JSONObject(input);
-			System.out.println(requestJSON);
-
 			String cmd = requestJSON.getString("command");
 			if (COMMAND_START.equals(cmd) || COMMAND_START_ASYNC.equals(cmd)) {
 				JSONArray rack = requestJSON.getJSONArray("rack");
@@ -178,7 +176,6 @@ public class WWCServlet extends HttpServlet {
 			internalError();
 		}
 		PrintWriter out = response.getWriter();
-		System.out.println("response: " + responseJSON);
 		out.append(responseJSON.toString());
 	}
 

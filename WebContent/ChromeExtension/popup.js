@@ -90,8 +90,9 @@ function loadMoves() {
       if (result.error) {
         $("#status").html(result.error);
       } else {
-        options.concat(result.options);
-        for ( var i = 0; i < options.length; i++) {
+        options = options.concat(result.options);
+        console.log(options);
+        for ( var i = 0; i < result.options.length; i++) {
           $("#options").append(
               "<td onclick=\"selectOption(" + i + ")\" id=\"option" + i
               + "\">" + (i + 1) + " </td>");
@@ -99,8 +100,8 @@ function loadMoves() {
               "<td id=\"score" + i + "\">" + result.options[i].score
               + "</td>");
         }
-        if (result.options.length > 0) {
-          $("#status").html("Moves Found!");
+        if (options.length > 0) {
+          $("#status").html("Moves Found!  Getting more...");
           curOptionIdx = 0;
           $("#option" + curOptionIdx).addClass("selected");
           $("#score" + curOptionIdx).addClass("selected");
@@ -111,6 +112,8 @@ function loadMoves() {
         } else {
           if (result.options.length < 1) {
             $("#status").html("No moves found");
+          } else {
+            $("#status").html("All moves found!");
           }
           loading = false;
         }
