@@ -7,6 +7,7 @@ var loading = false;
 //var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
 var url = "http://127.0.0.1:8080/WordsWithCheats/";
 
+
 function find(test) {
   if (test) {
     rack = ['w', 'o', 'r', 'd', 'z', 'f', 'u'];
@@ -91,13 +92,13 @@ function loadMoves() {
         $("#status").html(result.error);
       } else {
         options.concat(result.options);
-        for ( var i = 0; i < options.length; i++) {
+        for ( var i = 0; i < result.options.length; i++) {
           $("#options").append(
-              "<td onclick=\"selectOption(" + i + ")\" id=\"option" + i
-              + "\">" + (i + 1) + " </td>");
-          $("#scores").append(
-              "<td id=\"score" + i + "\">" + result.options[i].score
-              + "</td>");
+              "<tr onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
+              "<td>" + result.options[i].score + "<td/>" + 
+              "<td>" + word + "<td/>" + 
+              "</tr>"
+          );
         }
         if (result.options.length > 0) {
           $("#status").html("Moves Found!");
@@ -167,7 +168,6 @@ function clearBoard() {
       var letter = board[i][j];
       letter = letter == null ? "&nbsp;" : letter.toUpperCase();
       var tile = $("tr[row=\"" + j + "\"]").children("td[col=\"" + i + "\"]");
-      console.log(tile);
       tile.removeClass("active");
       tile.html(letter);
     }
