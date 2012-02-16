@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class PlayingBoard {
 
-	Character[][] playedLetters = null;
+	Tile[][] playedLetters = null;
 	BoardDescription board;
 	Dictionary dict;
 	int numPlaysCommitted = 0;
@@ -18,32 +18,32 @@ public class PlayingBoard {
 
 	public PlayingBoard(BoardDescription board, Dictionary dict) {
 		this.board = board;
-		playedLetters = new Character[board.getWidth()][board.getHeight()];
+		playedLetters = new Tile[board.getWidth()][board.getHeight()];
 		this.dict = dict;
 	}
 
 	public PlayingBoard(BoardDescription board, Dictionary dict,
-			Character[][] current, int numTurns) {
+			Tile[][] current, int numTurns) {
 		this.board = board;
-		playedLetters = new Character[board.getWidth()][board.getHeight()];
+		playedLetters = new Tile[board.getWidth()][board.getHeight()];
 		this.dict = dict;
 		playedLetters = current;
 		numPlaysCommitted = numTurns;
 	}
 
-	public void placeLetter(Point p, char c) throws InvalidPlayException {
+	public void placeLetter(Point p, Tile t) throws InvalidPlayException {
 		if (!inBounds(p)) {
-			throw new InvalidPlayException("Letter '" + c
+			throw new InvalidPlayException("Letter '" + t.c
 					+ "' placed out of bounds (" + p.x + "," + p.y + ")");
 		} else if (playedLetters[p.x][p.y] != null) {
-			throw new InvalidPlayException("Letter '" + c
+			throw new InvalidPlayException("Letter '" + t.c
 					+ "' placed on existing letter (" + p.x + "," + p.y + ")");
 		}
 		pendingPoints.add(p);
-		playedLetters[p.x][p.y] = c;
+		playedLetters[p.x][p.y] = t;
 	}
 
-	public void placeLetters(Map<Point, Character> letters)
+	public void placeLetters(Map<Point, Tile> letters)
 			throws InvalidPlayException {
 		for (Point point : letters.keySet()) {
 			placeLetter(point, letters.get(point));
@@ -229,7 +229,7 @@ public class PlayingBoard {
 		Space wordMod = null;
 		int score = 0;
 		for (Point p : word) {
-			char letter = playedLetters[p.x][p.y];
+			Tile letter = playedLetters[p.x][p.y];
 			Space letterMod = board.getSpace(p.x, p.y);
 			int letterScore = board.getLetterValue(letter);
 			if (pendingPoints.contains(p)) {
@@ -253,11 +253,11 @@ public class PlayingBoard {
 		return score;
 	}
 
-	public Character[][] getPlayedLetters() {
+	public Tile[][] getPlayedLetters() {
 		return playedLetters;
 	}
 
-	public void setPlayedLetters(Character[][] playedLetters) {
+	public void setPlayedLetters(Tile[][] playedLetters) {
 		this.playedLetters = playedLetters;
 	}
 
@@ -307,15 +307,15 @@ public class PlayingBoard {
 	public void printBoard(boolean showSpaces) {
 		for (int y = 0; y < board.getWidth(); y++) {
 			for (int x = 0; x < board.getHeight(); x++) {
-				Character c = playedLetters[x][y];
+				Tile c = playedLetters[x][y];
 				if (c == null) {
 					System.out.print("__");
 				} else {
 					if (pendingPoints.contains(new Point(x, y))) {
-						System.out.print(Character.toLowerCase(c));
+						System.out.print(Character.toLowerCase(c.c));
 						System.out.print("*");
 					} else {
-						System.out.print(Character.toUpperCase(c));
+						System.out.print(Character.toUpperCase(c.c));
 						System.out.print("_");
 					}
 				}

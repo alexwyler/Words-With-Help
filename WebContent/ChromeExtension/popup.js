@@ -1,60 +1,89 @@
 var options;
 var curOptionIdx;
 var board;
+var rack;
+var loading = false;
+
+var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
+//var url = "http://127.0.0.1:8080/WordsWithCheats/";
 
 function find() {
   chrome.extension.onRequest.addListener(
     function(request, sender, sendResponse) {
-    	
+    	console.log(request);
+    	rack = request.rack;
+    	board = request.board;
+    	options = [];
     	loadingGif = "<img src='loading.gif'/>";
     	status = $("#status").html("Finding Moves...<br/>" + loadingGif);
-    	
-      for (var i = 0; i < 7; i++) {
-        $("#rack_" + i).html(request.rack[i]);
-      }
+        for (var i = 0; i < 7; i++) {
+            $("#rack_" + i).html(request.rack[i]);
+        }
+        clearBoard();
+        loadMoves();
+    });
+  chrome.tabs.executeScript(null, {
+	  	allFrames: true, 
+	  	file:"iframe.js"
+	  	});
+}
+find();
+   
+function loadMoves() {
+	request = {
+		board : board,
+		rack : rack
+	};
 	
-      board = request.board;
-      clearBoard();
-
-      $.ajax({
-	  url: "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/",
-      type: "POST",
-	  data: JSON.stringify(request),
-	  dataType: "json",
-	  beforeSend: function(x) {
-	      if (x && x.overrideMimeType) {
-		  x.overrideMimeType("application/j-son;charset=UTF-8");
-	      }
-	  },
+	if (loading) {
+		request.command = "async-update";
+	} else {
+		request.command = "async-start";
+		loading = true;
+	}
+	
+	$.ajax({
+		url: url,
+		type: "POST",
+		data: JSON.stringify(request),
+		dataType: "json",
+		beforeSend: function(x) {
+			if (x && x.overrideMimeType) {
+				x.overrideMimeType("application/j-son;charset=UTF-8");
+			}
+		},
 	  success: function(result) {
 		  if (result.error) {
 			  $("#status").html(result.error);
-		  } else if (result.options.length < 1) {
-			  $("#status").html("No moves found");
 		  } else {
-		      $("#status").html("Moves Found!");
-		      options = result.options;
+		      options.concat(result.options);
 		      for (var i = 0; i < options.length; i++) {
-			  $("#options").append(
-			      "<span onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + (i+1) +
-			      " </span>"
-			  );
+		        $("#options").append(
+		            "<span onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + (i+1) +
+		            " </span>"
+		        );
 		      }
-		      curOptionIdx = 0;
-		      $("#option" + curOptionIdx).addClass("red");
-		      loadOption(options[curOptionIdx]);
+          if (result.options.length > 0) {
+            $("#status").html("Moves Found!");
+            curOptionIdx = 0;
+            $("#option" + curOptionIdx).addClass("red");
+            loadOption(options[curOptionIdx]);
+          }
+		      if (result.status == 'more') {
+		        setTimeout(loadMoves, 500);
+		      } else {
+		        if (result.options.length < 1) {
+		          $("#status").html("No moves found");
+		        }
+		        loading = false;
+		      }
 		  }
 	  },
-      error:function (xhr, ajaxOptions, thrownError) {
-    	  $("#status").html("Unable to connect to server");
-      }
-      });
-    });
-    chrome.tabs.executeScript(null,
-			      {allFrames: true, file:"iframe.js"});
+	  error:function (xhr, ajaxOptions, thrownError) {
+	    $("#status").html("Unable to connect to server");
+	  }
+	});
 }
-find();
-
 
 function loadOption(move) {
 	$('#scoreContainer').show();
@@ -77,31 +106,4 @@ function clearBoard() {
     }
 }
 
-function selectOption(idx) {
-    clearBoard();
-    $("#option" + curOptionIdx).removeClass("red");
-    curOptionIdx = idx;
-    $("#option" + curOptionIdx).addClass("red");
-    loadOption(options[curOptionIdx]);
-}
-
-function prevOption() {
-    if (curOptionIdx > 0) {
-	clearBoard();
-	$("#option" + curOptionIdx).removeClass("red");
-	curOptionIdx--;
-	$("#option" + curOptionIdx).addClass("red");
-	loadOption(options[curOptionIdx]);
-    }
-}
-
-function nextOption() {
-    if (curOptionIdx < options.length - 1) {
-	clearBoard();
-	$("#option" + curOptionIdx).removeClass("red");
-	curOptionIdx++;
-	$("#option" + curOptionIdx).addClass("red");
-	loadOption(options[curOptionIdx]);
-    }
-}
 

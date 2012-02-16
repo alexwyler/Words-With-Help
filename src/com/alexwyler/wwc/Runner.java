@@ -15,12 +15,12 @@ public class Runner {
 			InvalidPlayException, GameStateException {
 		Dictionary dict = Dictionary.getInstance(new File("words.txt"));
 		BoardDescription board = new WordsWithFriendsBoard();
-		Character[][] current = SomeGames.stacey;
+		Tile[][] current = SomeGames.stacey;
 		PlayingBoard game = new PlayingBoard(board, dict, current, 1);
 		
-		List<Character> chars = new ArrayList<Character>();
-		chars.add('t');
-		chars.add('o');
+		List<Tile> chars = new ArrayList<Tile>();
+		chars.add(new Tile('t'));
+		chars.add(new Tile('o'));
 		
 //		chars.add('t');
 //		chars.add('e');

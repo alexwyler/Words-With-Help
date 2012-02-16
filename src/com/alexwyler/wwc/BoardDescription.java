@@ -8,7 +8,7 @@ public abstract class BoardDescription {
 	
 	public abstract Space getSpace(int x, int y);
 	
-	public abstract int getLetterValue(char c);
+	public abstract int getLetterValue(Tile c);
 	
 	static void fillArrayFromUpperRight(Space[][] spaces) {
 		for (int x = 0; x < spaces.length / 2; x++) {
