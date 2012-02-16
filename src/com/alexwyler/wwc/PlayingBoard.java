@@ -123,7 +123,7 @@ public class PlayingBoard {
 		}
 	}
 
-	private String wordToString(List<Point> word) {
+	public String wordToString(List<Point> word) {
 		orderLetters(word);
 		String ret = "";
 		for (Point point : word) {
@@ -151,7 +151,7 @@ public class PlayingBoard {
 		});
 	}
 
-	private List<List<Point>> getCreatedWords() throws GameStateException {
+	public List<List<Point>> getCreatedWords() throws GameStateException {
 		if (pendingPoints.isEmpty()) {
 			throw new GameStateException("Pending letters queue is empty");
 		}
