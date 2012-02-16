@@ -29,7 +29,6 @@ public class Runner {
 			for (PlayOption option : options) {
 				game.placeLetters(option.getMove());
 				game.printBoard(true);
-				System.out.println("score: " + game.scorePending());
 				game.discardPending();
 			}
 		} else {

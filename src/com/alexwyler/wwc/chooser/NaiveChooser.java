@@ -59,7 +59,6 @@ public class NaiveChooser extends PlayChooser {
 						} else {
 							moves.add(move);
 						}
-						System.out.println(point + " > " + move);
 						try {
 							game.placeLetters(move);
 							if (game.getPendingViolation() == null) {
@@ -144,9 +143,6 @@ public class NaiveChooser extends PlayChooser {
 					}
 					placePoint = new Point(placePoint.x + 1, placePoint.y);
 				}
-
-				System.out.println("right: " + rightCachedVal);
-				System.out.println("left: " + leftCachedVal);
 
 				PlaySet horiz = rightCachedVal.merge(leftCachedVal);
 				PlayingBoard.orderLetters(horiz.getPoints());
