@@ -4,9 +4,9 @@ body {
   font-family: monospace;
 }
 
+#moveOptions,
 #board,
-#rack
-{
+#rack {
   border-spacing: 0px;
 }
 
@@ -16,6 +16,10 @@ body {
   width: 15px;
   height: 15px;
   padding: 3px;
+}
+
+#rack td {
+  border: 2px solid black;
 }
 
 #board td.active {
@@ -28,13 +32,19 @@ body {
   background: rgba(255, 255, 0, .5);
 }
 
-.red {
+.selected {
   color: red;
+  font-weight: bold;
 }
 
 .center {
   margin: 0 auto;
   text-align: center;	
+}
+
+#points {
+  color: red;
+  font-size: 16px;
 }
 
 #options-nav a {
@@ -51,7 +61,13 @@ body {
   float: right;
 }
 
-#options span {
+#moveOptions td {
+  border: 1px solid black;
+  padding: 2px;
+  font-size: 15px;
+}
+
+#options td {
   cursor: pointer;
 }
 

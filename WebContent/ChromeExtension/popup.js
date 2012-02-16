@@ -10,7 +10,7 @@ function find() {
       status = $("#status").html("Finding Moves...<br/>" + loadingGif);
       
       for (var i = 0; i < 7; i++) {
-        $("#rack_" + i).html(request.rack[i]);
+        $("#rack_" + i).html(request.rack[i].toUpperCase());
       }
       
       board = request.board;
@@ -37,12 +37,15 @@ function find() {
 	      options = result.options;
 	      for (var i = 0; i < options.length; i++) {
 		$("#options").append(
-		  "<span onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + (i+1) +
-		    " </span>"
+		  "<td onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + (i+1) + " </td>"
 		);
+		$("#scores").append(
+                  "<td id=\"score" + i + "\">" + result.options[i].score + "</td>"
+                );
 	      }
 	      curOptionIdx = 0;
-	      $("#option" + curOptionIdx).addClass("red");
+	      $("#option" + curOptionIdx).addClass("selected");
+	      $("#score" + curOptionIdx).addClass("selected");
 	      loadOption(options[curOptionIdx]);
 	    }
 	  },
@@ -61,12 +64,13 @@ function loadOption(move) {
   $('#scoreContainer').show();
   $("#points").html(move.score);
   for (var i in move.plays) {
+    var letter = move.plays[i].letter.toUpperCase();
     if (move.plays[i].blankLetter) {
       $("tr[row=\"" + move.plays[i].y + "\"]").children("td[col=\"" + move.plays[i].x + "\"]")
-        .html("<div class='blankMove'>" + move.plays[i].letter + "<div/>").addClass("active");
+        .html("<div class='blankMove'>" + letter + "<div/>").addClass("active");
     }
     $("tr[row=\"" + move.plays[i].y + "\"]").children("td[col=\"" + move.plays[i].x + "\"]")
-      .html("<div class='move'>" + move.plays[i].letter + "<div/>").addClass("active");
+      .html("<div class='move'>" + letter + "<div/>").addClass("active");
   }
 }
 
@@ -75,7 +79,7 @@ function clearBoard() {
   for (var i = 0; i < 15; i++) {
     for (var j = 0; j < 15; j++) {
       var letter = board[i][j];
-      letter = letter == null ? " " : letter;
+      letter = letter == null ? "&nbsp;" : letter.toUpperCase();
       tile = $("tr[row=\"" + j + "\"]").children("td[col=\"" + i + "\"]");
       tile.removeClass("active");
       tile.html(letter);
@@ -85,29 +89,23 @@ function clearBoard() {
 
 function selectOption(idx) {
   clearBoard();
-  $("#option" + curOptionIdx).removeClass("red");
+  $("#option" + curOptionIdx).removeClass("selected");
+  $("#score" + curOptionIdx).removeClass("selected");
   curOptionIdx = idx;
-  $("#option" + curOptionIdx).addClass("red");
+  $("#option" + curOptionIdx).addClass("selected");
+  $("#score" + curOptionIdx).addClass("selected");
   loadOption(options[curOptionIdx]);
 }
 
 function prevOption() {
   if (curOptionIdx > 0) {
-    clearBoard();
-    $("#option" + curOptionIdx).removeClass("red");
-    curOptionIdx--;
-    $("#option" + curOptionIdx).addClass("red");
-    loadOption(options[curOptionIdx]);
+    selectOption((curOptionIdx - 1));
   }
 }
 
 function nextOption() {
   if (curOptionIdx < options.length - 1) {
-    clearBoard();
-    $("#option" + curOptionIdx).removeClass("red");
-    curOptionIdx++;
-    $("#option" + curOptionIdx).addClass("red");
-    loadOption(options[curOptionIdx]);
+    selectOption((curOptionIdx + 1));
   }
 }
 
