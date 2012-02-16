@@ -4,9 +4,8 @@ var rack;
 var loading = false;
 
 //var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
-var url = "http://127.0.0.1:8080/WordsWithCheats/";
-//var url = "http://172.25.100.80:8080/WordsWithCheats/";
-
+//var url = "http://127.0.0.1:8080/WordsWithCheats/";
+var url = "http://172.25.100.80:8080/WordsWithCheats/";
 
 function find(test) {
   if (test) {
@@ -53,7 +52,6 @@ function find(test) {
             tile = tile == null ? "&nbsp;" : tile.toUpperCase();
             $("#rack_" + i).html(tile);
           }
-//          clearBoard();
           loadMoves();
         });
     chrome.tabs.executeScript(
