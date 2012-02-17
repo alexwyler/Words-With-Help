@@ -87,7 +87,11 @@ public class WWCServlet extends HttpServlet {
 		try {
 			requestJSON = new JSONObject(input);
 			Double apiVersion;
-			apiVersion = requestJSON.getDouble("api");
+			try {
+				apiVersion = requestJSON.getDouble("api");
+			} catch (JSONException e) {
+				apiVersion = null;
+			}
 			if (apiVersion == null || !apiVersion.equals(API_VERSION)) {
 				oldVersion();
 			} else {
