@@ -3,10 +3,6 @@ var board;
 var rack;
 var loading = false;
 
-//var url = "http://ec2-107-22-41-246.compute-1.amazonaws.com/WWH/";
-//var url = "http://127.0.0.1:8080/WordsWithCheats/";
-var url = "http://172.25.100.80:8080/WordsWithCheats/";
-
 function find(test) {
   if (test) {
     rack = ['w', 'o', 'r', 'd', 'z', 'y', 'u'];
@@ -65,15 +61,21 @@ function find(test) {
 find();
 
 function sortByScore(a, b) {
-  return b.score - a.score;
+	if (a.score == b.score && a.words && b.words) {
+		return b.words.toString() < a.words.toString(); 
+	} else {
+		return b.score - a.score;
+	}
 }
 
 function buildLinks(words) {
   var links = "";
-  for (var j = 0; j < words.length; j++) {
-    links += "<a target=\"_blank\" " +
-      "href=\"https://www.google.com/search?btnG=1&pws=0&q=define:" + words[j] + "\">" +
-      words[j] + "</a>&nbsp;";
+  if (words) {
+	  for (var j = 0; j < words.length; j++) {
+	    links += "<a target=\"_blank\" " +
+	      "href=\"https://www.google.com/search?btnG=1&pws=0&q=define:" + words[j] + "\">" +
+	      words[j] + "</a>&nbsp;";
+	  }
   }
   return links;
 }
@@ -90,9 +92,10 @@ function loadMoves() {
     request.command = "async-start";
     loading = true;
   }
+  request.api = config.api;
 
   $.ajax({
-    url : url,
+    url : config.url,
     type : "POST",
     data : JSON.stringify(request),
     dataType : "json",
@@ -121,9 +124,9 @@ function loadMoves() {
           $("#status").html("Moves Found!  Getting more...");
         }
         if (result.status == 'more') {
-          setTimeout(loadMoves, 500);
+          setTimeout(loadMoves, options.length == 0 ? 1000 : 500);
         } else {
-          if (result.options.length < 1) {
+          if (options.length < 1) {
             $("#status").html("No moves found");
           } else {
             $("#status").html("All moves found!");

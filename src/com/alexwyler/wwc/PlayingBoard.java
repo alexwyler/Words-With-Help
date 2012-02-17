@@ -21,7 +21,7 @@ public class PlayingBoard {
 		this.dict = dict;
 		playedLetters = new Tile[board.getWidth()][board.getHeight()];
 	}
-	
+
 	public PlayingBoard(BoardDescription board, Dictionary dict,
 			Tile[][] current, int numTurns) {
 		this.board = board;
@@ -60,6 +60,12 @@ public class PlayingBoard {
 	public String getPendingViolation() throws GameStateException {
 		if (pendingPoints.isEmpty()) {
 			return "Must play tiles";
+		}
+
+		for (Point p : pendingPoints) {
+			if (letterAt(p).isBlank()) {
+				return "Must instantiate blank tiles";
+			}
 		}
 
 		List<List<Point>> createdWords;

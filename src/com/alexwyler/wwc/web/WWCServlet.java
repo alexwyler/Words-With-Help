@@ -41,6 +41,7 @@ import com.alexwyler.wwc.chooser.PlayOption;
 public class WWCServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static final Double API_VERSION = 2.0;
 	private static final String COMMAND_START_ASYNC = "async-start";
 	private static final String COMMAND_START = "start";
 	private static final String COMMAND_UPDATE_ASYNC = "async-update";
@@ -85,87 +86,104 @@ public class WWCServlet extends HttpServlet {
 		responseJSON = new JSONObject();
 		try {
 			requestJSON = new JSONObject(input);
-			String cmd = requestJSON.getString("command");
-			if (COMMAND_START.equals(cmd) || COMMAND_START_ASYNC.equals(cmd)) {
-				JSONArray rack = requestJSON.getJSONArray("rack");
+			Double apiVersion;
+			apiVersion = requestJSON.getDouble("api");
+			if (apiVersion == null || !apiVersion.equals(API_VERSION)) {
+				oldVersion();
+			} else {
 
-				List<Tile> rackChars = new ArrayList<Tile>();
-				for (int i = 0; i < rack.length(); i++) {
-					String letter = rack.getString(i);
-					if (!"null".equals(letter)) {
-						if ("*".equals(letter)) {
-							rackChars.add(new Tile((char) 0, true));
-						} else {
-							rackChars.add(new Tile(letter.charAt(0)));
-						}
-					}
-				}
+				String cmd = requestJSON.getString("command");
+				if (COMMAND_START.equals(cmd)
+						|| COMMAND_START_ASYNC.equals(cmd)) {
+					JSONArray rack = requestJSON.getJSONArray("rack");
 
-				JSONArray board = requestJSON.getJSONArray("board");
-				Tile[][] existing = new Tile[board.length()][board.length()];
-				for (int x = 0; x < board.length(); x++) {
-					JSONArray boardY = board.getJSONArray(x);
-					for (int y = 0; y < boardY.length(); y++) {
-						String letter = boardY.getString(y);
-						if ("null".equals(letter)) {
-							existing[x][y] = null;
-						} else {
-							existing[x][y] = new Tile(letter.charAt(0));
-						}
-					}
-				}
-
-				File dictFile = new File(request.getSession()
-						.getServletContext().getRealPath("words.txt"));
-
-				Dictionary dict = Dictionary.getInstance(dictFile);
-				BoardDescription boardDesc = new WordsWithFriendsBoard();
-				PlayingBoard game = new PlayingBoard(boardDesc, dict, existing,
-						1);
-				PlayChooser chooser = new NaiveChooser(game, rackChars);
-
-				if (COMMAND_START.equals(cmd)) {
-					Collection<PlayOption> options = new HashSet<PlayOption>(
-							chooser.getOptions());
-					responseJSON = encodeOptions(options, game);
-				} else {
-					request.getSession().setAttribute("async-error", null);
-					request.getSession().setAttribute("chooser", chooser);
-					request.getSession().setAttribute("last-num-sent", 0);
-					request.getSession().setAttribute("game", game);
-					new Thread() {
-						@Override
-						public void run() {
-							try {
-								((NaiveChooser) request.getSession()
-										.getAttribute("chooser")).getOptions();
-							} catch (GameStateException e) {
-								request.getSession().setAttribute(
-										"async-error", e);
-								e.printStackTrace();
+					List<Tile> rackChars = new ArrayList<Tile>();
+					for (int i = 0; i < rack.length(); i++) {
+						String letter = rack.getString(i);
+						if (!"null".equals(letter)) {
+							if ("*".equals(letter)) {
+								rackChars.add(new Tile((char) 0, true));
+							} else {
+								rackChars.add(new Tile(letter.charAt(0)));
 							}
 						}
-					}.start();
+					}
+
+					JSONArray board = requestJSON.getJSONArray("board");
+					Tile[][] existing = new Tile[board.length()][board.length()];
+					for (int x = 0; x < board.length(); x++) {
+						JSONArray boardY = board.getJSONArray(x);
+						for (int y = 0; y < boardY.length(); y++) {
+							String letter = boardY.getString(y);
+							if ("null".equals(letter)) {
+								existing[x][y] = null;
+							} else {
+								existing[x][y] = new Tile(letter.charAt(0));
+							}
+						}
+					}
+
+					File dictFile = new File(request.getSession()
+							.getServletContext().getRealPath("words.txt"));
+
+					Dictionary dict = Dictionary.getInstance(dictFile);
+					BoardDescription boardDesc = new WordsWithFriendsBoard();
+					PlayingBoard game = new PlayingBoard(boardDesc, dict,
+							existing, 1);
+					PlayChooser chooser = new NaiveChooser(game, rackChars);
+
+					if (COMMAND_START.equals(cmd)) {
+						Collection<PlayOption> options = new HashSet<PlayOption>(
+								chooser.getOptions());
+						responseJSON = encodeOptions(options, game);
+					} else {
+						request.getSession().setAttribute("async-error", null);
+						request.getSession().setAttribute("chooser", chooser);
+						request.getSession().setAttribute("last-num-sent", 0);
+						request.getSession().setAttribute("game", game);
+						new Thread() {
+							@Override
+							public void run() {
+								try {
+									PlayChooser chooser = ((PlayChooser) request
+											.getSession().getAttribute(
+													"chooser"));
+									if (chooser != null) {
+										chooser.getOptions();
+									}
+								} catch (GameStateException e) {
+									request.getSession().setAttribute(
+											"async-error", e);
+									e.printStackTrace();
+								}
+							}
+						}.start();
+					}
 				}
-			}
-			if (COMMAND_UPDATE_ASYNC.equals(cmd)
-					|| COMMAND_START_ASYNC.equals(cmd)) {
-				int lastNumSent = (Integer) request.getSession().getAttribute(
-						"last-num-sent");
-				PlayChooser chooser = (PlayChooser) request.getSession()
-						.getAttribute("chooser");
-				boolean complete = chooser.isComplete();
-				List<PlayOption> options = chooser.getCurrentOptions();
-				List<PlayOption> toReturn = options.subList(lastNumSent,
-						options.size());
-				request.getSession().setAttribute("last-num-sent",
-						options.size());
-				responseJSON = encodeOptions(toReturn, (PlayingBoard) request
-						.getSession().getAttribute("game"));
-				if (complete) {
-					responseJSON.put(PARAM_STATUS, STATUS_DONE);
-				} else {
-					responseJSON.put(PARAM_STATUS, STATUS_MORE);
+				if (COMMAND_UPDATE_ASYNC.equals(cmd)
+						|| COMMAND_START_ASYNC.equals(cmd)) {
+					int lastNumSent = (Integer) request.getSession()
+							.getAttribute("last-num-sent");
+					PlayChooser chooser = (PlayChooser) request.getSession()
+							.getAttribute("chooser");
+					boolean complete = chooser.isComplete();
+					List<PlayOption> options = chooser.getCurrentOptions();
+					List<PlayOption> toReturn;
+					synchronized (options) {
+						toReturn = new ArrayList<PlayOption>(options.subList(
+								lastNumSent, options.size()));
+					}
+					request.getSession().setAttribute("last-num-sent",
+							options.size());
+					responseJSON = encodeOptions(
+							toReturn,
+							(PlayingBoard) request.getSession().getAttribute(
+									"game"));
+					if (complete) {
+						responseJSON.put(PARAM_STATUS, STATUS_DONE);
+					} else {
+						responseJSON.put(PARAM_STATUS, STATUS_MORE);
+					}
 				}
 			}
 		} catch (JSONException e) {
@@ -185,7 +203,10 @@ public class WWCServlet extends HttpServlet {
 		if (request.getSession().getAttribute("async-error") != null) {
 			internalError();
 		}
-		System.out.println(responseJSON.toString());
+		if (responseJSON == null) {
+			internalError();
+		}
+		// System.out.println(responseJSON.toString());
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
@@ -209,6 +230,16 @@ public class WWCServlet extends HttpServlet {
 		}
 	}
 
+	private void oldVersion() {
+		responseJSON = new JSONObject();
+		try {
+			responseJSON.put("error",
+					"Newer version found.  Please update to use.");
+		} catch (JSONException e) {
+			// fucked if this happens
+		}
+	}
+
 	public JSONObject encodeOptions(Collection<PlayOption> options,
 			PlayingBoard game) throws InvalidPlayException, GameStateException {
 		Map<String, Object> mainResp = new HashMap<String, Object>();
@@ -216,13 +247,16 @@ public class WWCServlet extends HttpServlet {
 		for (PlayOption option : options) {
 			Map<String, Object> playInfo = new HashMap<String, Object>();
 			List<Map<String, Object>> moves = new ArrayList<Map<String, Object>>();
-			game.placeLetters(option.getMove());
-			List<List<Point>> words = game.getCreatedWords();
-			List<String> createdStrings = new ArrayList<String>();
-			for (List<Point> word : words) {
-				createdStrings.add(game.wordToString(word));
+			List<String> createdStrings;
+			synchronized (game) {
+				game.placeLetters(option.getMove());
+				List<List<Point>> words = game.getCreatedWords();
+				createdStrings = new ArrayList<String>();
+				for (List<Point> word : words) {
+					createdStrings.add(game.wordToString(word));
+				}
+				game.discardPending();
 			}
-			game.discardPending();;
 			playInfo.put("words", createdStrings);
 			for (Point point : option.getMove().getPoints()) {
 				Tile t = option.getMove().getLetter(point);
