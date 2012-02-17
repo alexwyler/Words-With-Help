@@ -23,7 +23,6 @@ public class PlayingBoardTest {
 		game = new PlayingBoard(board, dict);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testOK() throws InvalidPlayException, GameStateException {
 		Map<Point, Tile> cakes = new HashMap<Point, Tile>();
