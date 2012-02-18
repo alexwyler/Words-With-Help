@@ -192,7 +192,7 @@ public class WWCServlet extends HttpServlet {
 		if (responseJSON == null) {
 			internalError();
 		}
-		System.err.println(responseJSON.toString());
+		//System.err.println(responseJSON.toString());
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
