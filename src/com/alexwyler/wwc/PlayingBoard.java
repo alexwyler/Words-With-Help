@@ -13,6 +13,7 @@ public class PlayingBoard {
 	BoardDescription board;
 	Dictionary dict;
 	boolean empty = true;
+	boolean flipped = false;
 
 	List<Point> pendingPoints = new ArrayList<Point>();
 
@@ -336,6 +337,29 @@ public class PlayingBoard {
 			}
 		}
 		return points;
+	}
+
+	public void flip() {
+		Tile[][] flippedPlayedLetters = new Tile[playedLetters.length][playedLetters[0].length];
+		for (int x = 0; x < playedLetters.length; x++) {
+			for (int y = 0; y < playedLetters[x].length; y++) {
+				flippedPlayedLetters[x][y] = playedLetters[y][x];
+			}
+		}
+
+		playedLetters = flippedPlayedLetters;
+		List<Point> flippedPending = new ArrayList<Point>();
+		for (Point point : pendingPoints) {
+			flippedPending.add(new Point(point.y, point.x));
+		}
+
+		pendingPoints = flippedPending;
+
+		flipped = !flipped;
+	}
+
+	public boolean isFlipped() {
+		return flipped;
 	}
 
 	public void printBoard(boolean showSpaces) {
