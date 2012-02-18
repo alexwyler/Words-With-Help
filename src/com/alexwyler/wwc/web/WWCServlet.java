@@ -192,7 +192,7 @@ public class WWCServlet extends HttpServlet {
 		if (responseJSON == null) {
 			internalError();
 		}
-		//System.err.println(responseJSON.toString());
+		// System.err.println(responseJSON.toString());
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
@@ -250,6 +250,9 @@ public class WWCServlet extends HttpServlet {
 				move.put("x", point.x);
 				move.put("y", point.y);
 				move.put("letter", t.c);
+				if (t.wildcard) {
+					move.put("wildcard", true);
+				}
 				moves.add(move);
 			}
 			playInfo.put("plays", moves);
