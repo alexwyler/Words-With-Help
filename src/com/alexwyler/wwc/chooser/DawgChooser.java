@@ -29,13 +29,7 @@ public class DawgChooser extends PlayChooser {
 
 	public DawgChooser(PlayingBoard game, List<Tile> tiles, DawgNode dawg) {
 		this.game = game;
-		List<Tile> nonBlanks = new LinkedList<Tile>();
-		for (Tile tile : tiles) {
-			if (!tile.wildcard) {
-				nonBlanks.add(tile);
-			}
-		}
-		this.tiles = nonBlanks;
+		this.tiles = tiles;
 		this.dawg = dawg;
 	}
 
@@ -114,8 +108,7 @@ public class DawgChooser extends PlayChooser {
 					cur = new Point(cur.x + 1, cur.y);
 					while (game.inBounds(cur) && game.letterAt(cur) != null) {
 						partial.add(game.letterAt(cur));
-						node = node.edges.get(Character.toLowerCase(game
-								.letterAt(cur).c));
+						node = node.getChild(game.letterAt(cur));
 						cur = new Point(cur.x + 1, cur.y);
 					}
 					extendRight(partial, node, p);
@@ -125,31 +118,29 @@ public class DawgChooser extends PlayChooser {
 		}
 	}
 
-	private int indexOfCharInRack(char c) {
-		for (int i = 0; i < tiles.size(); i++) {
-			if (Character.toLowerCase(c) == tiles.get(i).c) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private void leftPart(LinkedList<Tile> partial, DawgNode node, int limit,
 			Point anchor) {
 		extendRight(partial, node, anchor);
 		if (limit > 0) {
-			// TODO: iterate over rack instead of edge here, because blanks
-			// don't trigger word score
-			for (Character c : node.edges.keySet()) {
-				int rackIndex = indexOfCharInRack(c);
-				if (rackIndex >= 0) {
-					Tile removed = tiles.remove(rackIndex);
-					partial.addLast(removed);
-					DawgNode next = node.edges.get(c);
-					leftPart(partial, next, limit - 1, anchor);
-					tiles.add(removed);
-					partial.removeLast();
+			for (int i = 0; i < tiles.size(); i++) {
+				Tile removed = tiles.remove(i);
+				List<Tile> toChecks = new ArrayList<Tile>();
+				if (removed.wildcard) {
+					for (char c = 'a'; c <= 'z'; c++) {
+						toChecks.add(new Tile(c, true));
+					}
+				} else {
+					toChecks.add(removed);
 				}
+				for (Tile toCheck : toChecks) {
+					DawgNode next = node.getChild(toCheck);
+					if (next != null) {
+						partial.addLast(toCheck);
+						leftPart(partial, next, limit - 1, anchor);
+						partial.removeLast();
+					}
+				}
+				tiles.add(removed);
 			}
 		}
 	}
@@ -162,25 +153,36 @@ public class DawgChooser extends PlayChooser {
 					recordMove(partial, square);
 				}
 				Set<Character> crossSet = crossSets.get(square);
-				for (Character c : node.edges.keySet()) {
-					int rackIndex = indexOfCharInRack(c);
-					if (rackIndex >= 0
-							&& (crossSet == null || crossSet.contains(c))) {
-						Tile removed = tiles.remove(rackIndex);
-						partial.addLast(removed);
-						DawgNode next = node.edges.get(c);
-						Point right = new Point(square.x + 1, square.y);
-						extendRight(partial, next, right);
-						partial.removeLast();
-						tiles.add(removed);
+
+				for (int i = 0; i < tiles.size(); i++) {
+					Tile removed = tiles.remove(i);
+					List<Tile> toChecks = new ArrayList<Tile>();
+					if (removed.wildcard) {
+						for (char c = 'a'; c <= 'z'; c++) {
+							toChecks.add(new Tile(c, true));
+						}
+					} else {
+						toChecks.add(removed);
 					}
+					for (Tile toCheck : toChecks) {
+						if (crossSet != null && !crossSet.contains(toCheck.c)) {
+							continue;
+						}
+						DawgNode next = node.getChild(toCheck);
+						if (next != null) {
+							partial.addLast(toCheck);
+							Point right = new Point(square.x + 1, square.y);
+							extendRight(partial, next, right);
+							partial.removeLast();
+						}
+					}
+					tiles.add(removed);
 				}
 			} else {
 				Tile letter = game.letterAt(square);
-				if (node.edges.containsKey(Character.toLowerCase(letter.c))) {
+				DawgNode next = node.getChild(letter);
+				if (next != null) {
 					partial.addLast(letter);
-					DawgNode next = node.edges.get(Character
-							.toLowerCase(letter.c));
 					Point right = new Point(square.x + 1, square.y);
 					extendRight(partial, next, right);
 					partial.removeLast();
@@ -214,13 +216,13 @@ public class DawgChooser extends PlayChooser {
 						valid = cur.terminal;
 						break;
 					}
-					Character nextChar = game.letterAt(next).c;
-					if (!cur.edges.containsKey(nextChar)) {
+					Tile nextTile = game.letterAt(next);
+					cur = cur.getChild(nextTile);
+					if (cur == null) {
 						valid = false;
 						break;
 					} else {
 						next = new Point(next.x, next.y + 1);
-						cur = cur.edges.get(nextChar);
 					}
 				}
 

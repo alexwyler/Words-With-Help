@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import com.alexwyler.wwc.Tile;
+
 public class DawgNode {
 
 	public boolean terminal;
+	private Map<Character, DawgNode> edges = new HashMap<Character, DawgNode>();
 
-	public Map<Character, DawgNode> edges = new HashMap<Character, DawgNode>();
 	static HashMap<File, DawgNode> instances = new HashMap<File, DawgNode>();
 
 	public static DawgNode getInstance(File file) {
@@ -35,13 +37,21 @@ public class DawgNode {
 				DawgNode next = cur.edges.get(c);
 				if (next == null) {
 					next = new DawgNode();
-					cur.edges.put(c, next);
+					cur.edges.put(Character.toLowerCase(c), next);
 				}
 				cur = next;
 			}
 			cur.terminal = true;
 		}
 		return root;
+	}
+
+	public DawgNode getChild(Tile t) {
+		return getChild(t.c);
+	}
+
+	public DawgNode getChild(char c) {
+		return edges.get(Character.toLowerCase(c));
 	}
 
 }
