@@ -20,20 +20,20 @@ public class Runner {
 		PlayingBoard game = new PlayingBoard(board, dict, current, 1);
 		
 		List<Tile> chars = new ArrayList<Tile>();
-		chars.add(new Tile('a'));
-		chars.add(new Tile('d'));
-		chars.add(new Tile('e'));
-		chars.add(new Tile('f'));
-		chars.add(new Tile('c'));
-		chars.add(new Tile('d'));
-		chars.add(new Tile('q'));
-		chars.add(new Tile('x'));
+		chars.add(new Tile('l'));
+		chars.add(new Tile('a', true));
+		chars.add(new Tile('o'));
+		chars.add(new Tile('s'));
+		chars.add(new Tile('t'));
+		chars.add(new Tile('r'));
+		chars.add(new Tile('s'));
 		
 		PlayChooser chooser = new NaiveChooser(game, chars);
 		List<PlayOption> options = chooser.getOptions();
 
 		if (!options.isEmpty()) {
 			for (PlayOption option : options) {
+				System.out.println(option);
 				game.placeLetters(option.getMove());
 				//game.printBoard(true);
 				game.discardPending();

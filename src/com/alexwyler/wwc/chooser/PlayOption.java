@@ -59,7 +59,9 @@ public class PlayOption implements Comparable<PlayOption> {
 			return false;
 		return true;
 	}
-	
-	
+
+	public String toString() {
+		return move + " (" + score + ")";
+	}
 
 }

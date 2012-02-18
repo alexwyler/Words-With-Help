@@ -55,7 +55,6 @@ public class WWCServlet extends HttpServlet {
 	 * Default constructor.
 	 */
 	public WWCServlet() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -96,6 +95,27 @@ public class WWCServlet extends HttpServlet {
 				oldVersion();
 			} else {
 
+				File dictFile = new File(request.getSession()
+						.getServletContext().getRealPath("words.txt"));
+				JSONArray board = requestJSON.getJSONArray("board");
+				Tile[][] existing = new Tile[board.length()][board.length()];
+				for (int x = 0; x < board.length(); x++) {
+					JSONArray boardY = board.getJSONArray(x);
+					for (int y = 0; y < boardY.length(); y++) {
+						String letter = boardY.getString(y);
+						if ("null".equals(letter)) {
+							existing[x][y] = null;
+						} else {
+							existing[x][y] = new Tile(letter.charAt(0));
+						}
+					}
+				}
+
+				Dictionary dict = Dictionary.getInstance(dictFile);
+				BoardDescription boardDesc = new WordsWithFriendsBoard();
+				PlayingBoard game = new PlayingBoard(boardDesc, dict, existing,
+						1);
+
 				String cmd = requestJSON.getString("command");
 				if (COMMAND_START.equals(cmd)
 						|| COMMAND_START_ASYNC.equals(cmd)) {
@@ -113,27 +133,6 @@ public class WWCServlet extends HttpServlet {
 						}
 					}
 
-					JSONArray board = requestJSON.getJSONArray("board");
-					Tile[][] existing = new Tile[board.length()][board.length()];
-					for (int x = 0; x < board.length(); x++) {
-						JSONArray boardY = board.getJSONArray(x);
-						for (int y = 0; y < boardY.length(); y++) {
-							String letter = boardY.getString(y);
-							if ("null".equals(letter)) {
-								existing[x][y] = null;
-							} else {
-								existing[x][y] = new Tile(letter.charAt(0));
-							}
-						}
-					}
-
-					File dictFile = new File(request.getSession()
-							.getServletContext().getRealPath("words.txt"));
-
-					Dictionary dict = Dictionary.getInstance(dictFile);
-					BoardDescription boardDesc = new WordsWithFriendsBoard();
-					PlayingBoard game = new PlayingBoard(boardDesc, dict,
-							existing, 1);
 					PlayChooser chooser = new NaiveChooser(game, rackChars);
 
 					if (COMMAND_START.equals(cmd)) {
@@ -145,23 +144,7 @@ public class WWCServlet extends HttpServlet {
 						request.getSession().setAttribute("chooser", chooser);
 						request.getSession().setAttribute("last-num-sent", 0);
 						request.getSession().setAttribute("game", game);
-						new Thread() {
-							@Override
-							public void run() {
-								try {
-									PlayChooser chooser = ((PlayChooser) request
-											.getSession().getAttribute(
-													"chooser"));
-									if (chooser != null) {
-										chooser.getOptions();
-									}
-								} catch (GameStateException e) {
-									request.getSession().setAttribute(
-											"async-error", e);
-									e.printStackTrace();
-								}
-							}
-						}.start();
+						new AsyncPlayChooserRunner(chooser).start();
 					}
 				}
 				if (COMMAND_UPDATE_ASYNC.equals(cmd)
@@ -179,10 +162,7 @@ public class WWCServlet extends HttpServlet {
 					}
 					request.getSession().setAttribute("last-num-sent",
 							options.size());
-					responseJSON = encodeOptions(
-							toReturn,
-							(PlayingBoard) request.getSession().getAttribute(
-									"game"));
+					responseJSON = encodeOptions(toReturn, game);
 					if (complete) {
 						responseJSON.put(PARAM_STATUS, STATUS_DONE);
 					} else {
@@ -210,7 +190,7 @@ public class WWCServlet extends HttpServlet {
 		if (responseJSON == null) {
 			internalError();
 		}
-		// System.out.println(responseJSON.toString());
+		System.err.println(responseJSON.toString());
 		PrintWriter out = response.getWriter();
 		out.append(responseJSON.toString());
 	}
@@ -277,6 +257,27 @@ public class WWCServlet extends HttpServlet {
 		mainResp.put("options", plays);
 		JSONObject jsonResponse = new JSONObject(mainResp);
 		return jsonResponse;
+	}
+
+	class AsyncPlayChooserRunner extends Thread {
+
+		PlayChooser chooser;
+
+		public AsyncPlayChooserRunner(PlayChooser chooser) {
+			this.chooser = chooser;
+		}
+
+		@Override
+		public void run() {
+			try {
+				if (chooser != null) {
+					chooser.getOptions();
+				}
+			} catch (GameStateException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }
