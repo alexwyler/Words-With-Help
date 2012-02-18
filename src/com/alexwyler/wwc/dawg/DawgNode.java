@@ -47,7 +47,10 @@ public class DawgNode {
 	}
 
 	public DawgNode getChild(Tile t) {
-		return getChild(t.c);
+		if (t != null) {
+			return getChild(t.c);
+		}
+		return null;
 	}
 
 	public DawgNode getChild(char c) {
