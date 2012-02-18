@@ -143,7 +143,10 @@ public class PlayingBoard {
 	}
 
 	public Tile letterAt(Point p) {
-		return playedLetters[p.x][p.y];
+		if (inBounds(p)) {
+			return playedLetters[p.x][p.y];
+		}
+		return null;
 	}
 
 	public static void orderLetters(List<Point> word) {

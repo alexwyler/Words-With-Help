@@ -136,46 +136,44 @@ public class DawgChooser extends PlayChooser {
 
 	private void extendRight(LinkedList<Tile> partial, DawgNode node,
 			Point square) throws GameStateException {
-		if (game.inBounds(square)) {
-			if (game.letterAt(square) == null) {
-				if (node.terminal) {
-					recordMove(partial, square);
-				}
-				Set<Character> crossSet = crossSets.get(square);
+		if (node.terminal) {
+			recordMove(partial, square);
+		}
+		if (game.inBounds(square) && game.letterAt(square) == null) {
+			Set<Character> crossSet = crossSets.get(square);
 
-				for (int i = 0; i < tiles.size(); i++) {
-					Tile removed = tiles.remove(i);
-					List<Tile> toChecks = new ArrayList<Tile>();
-					if (removed.wildcard) {
-						for (char c = 'a'; c <= 'z'; c++) {
-							toChecks.add(new Tile(c, true));
-						}
-					} else {
-						toChecks.add(removed);
+			for (int i = 0; i < tiles.size(); i++) {
+				Tile removed = tiles.remove(i);
+				List<Tile> toChecks = new ArrayList<Tile>();
+				if (removed.wildcard) {
+					for (char c = 'a'; c <= 'z'; c++) {
+						toChecks.add(new Tile(c, true));
 					}
-					for (Tile toCheck : toChecks) {
-						if (crossSet != null && !crossSet.contains(toCheck.c)) {
-							continue;
-						}
-						DawgNode next = node.getChild(toCheck);
-						if (next != null) {
-							partial.addLast(toCheck);
-							Point right = new Point(square.x + 1, square.y);
-							extendRight(partial, next, right);
-							partial.removeLast();
-						}
+				} else {
+					toChecks.add(removed);
+				}
+				for (Tile toCheck : toChecks) {
+					if (crossSet != null && !crossSet.contains(toCheck.c)) {
+						continue;
 					}
-					tiles.add(removed);
+					DawgNode next = node.getChild(toCheck);
+					if (next != null) {
+						partial.addLast(toCheck);
+						Point right = new Point(square.x + 1, square.y);
+						extendRight(partial, next, right);
+						partial.removeLast();
+					}
 				}
-			} else {
-				Tile letter = game.letterAt(square);
-				DawgNode next = node.getChild(letter);
-				if (next != null) {
-					partial.addLast(letter);
-					Point right = new Point(square.x + 1, square.y);
-					extendRight(partial, next, right);
-					partial.removeLast();
-				}
+				tiles.add(removed);
+			}
+		} else {
+			Tile letter = game.letterAt(square);
+			DawgNode next = node.getChild(letter);
+			if (next != null) {
+				partial.addLast(letter);
+				Point right = new Point(square.x + 1, square.y);
+				extendRight(partial, next, right);
+				partial.removeLast();
 			}
 		}
 	}
