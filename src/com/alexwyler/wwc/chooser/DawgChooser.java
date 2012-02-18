@@ -1,6 +1,7 @@
 package com.alexwyler.wwc.chooser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -18,8 +19,8 @@ import com.alexwyler.wwc.dawg.DawgNode;
 public class DawgChooser extends PlayChooser {
 
 	boolean isComplete = false;
-	List<PlayOption> options = new ArrayList<PlayOption>();
-	List<PlaySet> legalMoves = new ArrayList<PlaySet>();
+	List<PlayOption> options = Collections
+			.synchronizedList(new ArrayList<PlayOption>());
 	List<PlayOption> curOptions = new ArrayList<PlayOption>();
 	Set<PlaySet> seenMoves = new HashSet<PlaySet>();
 	Map<Point, Set<Character>> crossSets = new HashMap<Point, Set<Character>>();
@@ -29,13 +30,7 @@ public class DawgChooser extends PlayChooser {
 
 	public DawgChooser(PlayingBoard game, List<Tile> tiles, DawgNode dawg) {
 		this.game = game;
-		List<Tile> nonBlanks = new LinkedList<Tile>();
-		for (Tile tile : tiles) {
-			if (!tile.wildcard) {
-				nonBlanks.add(tile);
-			}
-		}
-		this.tiles = nonBlanks;
+		this.tiles = tiles;
 		this.dawg = dawg;
 	}
 
@@ -55,32 +50,11 @@ public class DawgChooser extends PlayChooser {
 		game.flip();
 		getAcrossOptions();
 		game.flip();
-
-		for (PlaySet move : legalMoves) {
-			if (seenMoves.contains(move)) {
-				continue;
-			} else {
-				seenMoves.add(move);
-			}
-			try {
-				game.placeLetters(move);
-				String vio = game.getPendingViolation();
-				if (vio == null) {
-					int score = game.scorePending();
-					options.add(new PlayOption(move, score));
-				} else {
-				}
-			} catch (InvalidPlayException e) {
-				e.printStackTrace();
-			}
-			game.discardPending();
-		}
-
 		isComplete = true;
 		return options;
 	}
 
-	private void getAcrossOptions() {
+	private void getAcrossOptions() throws GameStateException {
 		calculateCrossChecks();
 		for (int y = 0; y < 15; y++) {
 
@@ -114,8 +88,7 @@ public class DawgChooser extends PlayChooser {
 					cur = new Point(cur.x + 1, cur.y);
 					while (game.inBounds(cur) && game.letterAt(cur) != null) {
 						partial.add(game.letterAt(cur));
-						node = node.edges.get(Character.toLowerCase(game
-								.letterAt(cur).c));
+						node = node.getChild(game.letterAt(cur));
 						cur = new Point(cur.x + 1, cur.y);
 					}
 					extendRight(partial, node, p);
@@ -125,62 +98,71 @@ public class DawgChooser extends PlayChooser {
 		}
 	}
 
-	private int indexOfCharInRack(char c) {
-		for (int i = 0; i < tiles.size(); i++) {
-			if (Character.toLowerCase(c) == tiles.get(i).c) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private void leftPart(LinkedList<Tile> partial, DawgNode node, int limit,
-			Point anchor) {
+			Point anchor) throws GameStateException {
 		extendRight(partial, node, anchor);
 		if (limit > 0) {
-			// TODO: iterate over rack instead of edge here, because blanks
-			// don't trigger word score
-			for (Character c : node.edges.keySet()) {
-				int rackIndex = indexOfCharInRack(c);
-				if (rackIndex >= 0) {
-					Tile removed = tiles.remove(rackIndex);
-					partial.addLast(removed);
-					DawgNode next = node.edges.get(c);
-					leftPart(partial, next, limit - 1, anchor);
-					tiles.add(removed);
-					partial.removeLast();
+			for (int i = 0; i < tiles.size(); i++) {
+				Tile removed = tiles.remove(i);
+				List<Tile> toChecks = new ArrayList<Tile>();
+				if (removed.wildcard) {
+					for (char c = 'a'; c <= 'z'; c++) {
+						toChecks.add(new Tile(c, true));
+					}
+				} else {
+					toChecks.add(removed);
 				}
+				for (Tile toCheck : toChecks) {
+					DawgNode next = node.getChild(toCheck);
+					if (next != null) {
+						partial.addLast(toCheck);
+						leftPart(partial, next, limit - 1, anchor);
+						partial.removeLast();
+					}
+				}
+				tiles.add(removed);
 			}
 		}
 	}
 
 	private void extendRight(LinkedList<Tile> partial, DawgNode node,
-			Point square) {
+			Point square) throws GameStateException {
 		if (game.inBounds(square)) {
 			if (game.letterAt(square) == null) {
 				if (node.terminal) {
 					recordMove(partial, square);
 				}
 				Set<Character> crossSet = crossSets.get(square);
-				for (Character c : node.edges.keySet()) {
-					int rackIndex = indexOfCharInRack(c);
-					if (rackIndex >= 0
-							&& (crossSet == null || crossSet.contains(c))) {
-						Tile removed = tiles.remove(rackIndex);
-						partial.addLast(removed);
-						DawgNode next = node.edges.get(c);
-						Point right = new Point(square.x + 1, square.y);
-						extendRight(partial, next, right);
-						partial.removeLast();
-						tiles.add(removed);
+
+				for (int i = 0; i < tiles.size(); i++) {
+					Tile removed = tiles.remove(i);
+					List<Tile> toChecks = new ArrayList<Tile>();
+					if (removed.wildcard) {
+						for (char c = 'a'; c <= 'z'; c++) {
+							toChecks.add(new Tile(c, true));
+						}
+					} else {
+						toChecks.add(removed);
 					}
+					for (Tile toCheck : toChecks) {
+						if (crossSet != null && !crossSet.contains(toCheck.c)) {
+							continue;
+						}
+						DawgNode next = node.getChild(toCheck);
+						if (next != null) {
+							partial.addLast(toCheck);
+							Point right = new Point(square.x + 1, square.y);
+							extendRight(partial, next, right);
+							partial.removeLast();
+						}
+					}
+					tiles.add(removed);
 				}
 			} else {
 				Tile letter = game.letterAt(square);
-				if (node.edges.containsKey(Character.toLowerCase(letter.c))) {
+				DawgNode next = node.getChild(letter);
+				if (next != null) {
 					partial.addLast(letter);
-					DawgNode next = node.edges.get(Character
-							.toLowerCase(letter.c));
 					Point right = new Point(square.x + 1, square.y);
 					extendRight(partial, next, right);
 					partial.removeLast();
@@ -214,13 +196,13 @@ public class DawgChooser extends PlayChooser {
 						valid = cur.terminal;
 						break;
 					}
-					Character nextChar = game.letterAt(next).c;
-					if (!cur.edges.containsKey(nextChar)) {
+					Tile nextTile = game.letterAt(next);
+					cur = cur.getChild(nextTile);
+					if (cur == null) {
 						valid = false;
 						break;
 					} else {
 						next = new Point(next.x, next.y + 1);
-						cur = cur.edges.get(nextChar);
 					}
 				}
 
@@ -232,7 +214,8 @@ public class DawgChooser extends PlayChooser {
 		return ret;
 	}
 
-	private void recordMove(List<Tile> word, Point terminator) {
+	private void recordMove(List<Tile> word, Point terminator)
+			throws GameStateException {
 		PlaySet move = new MapPlaySet();
 		Point cur = new Point(terminator.x - 1, terminator.y);
 		int i = word.size() - 1;
@@ -246,7 +229,25 @@ public class DawgChooser extends PlayChooser {
 		recordMove(move);
 	}
 
-	private void recordMove(PlaySet option) {
+	private void recordMove(PlaySet option) throws GameStateException {
+		int score = -1;
+		try {
+			game.placeLetters(option);
+			String vio = game.getPendingViolation();
+			if (vio == null) {
+				score = game.scorePending();
+			}
+		} catch (InvalidPlayException e) {
+			e.printStackTrace();
+		}
+		game.discardPending();
+
+		if (score < 0 || seenMoves.contains(option)) {
+			return;
+		} else {
+			seenMoves.add(option);
+		}
+
 		if (game.isFlipped()) {
 			PlaySet normalized = new MapPlaySet();
 			for (Point p : option.getPoints()) {
@@ -254,6 +255,7 @@ public class DawgChooser extends PlayChooser {
 			}
 			option = normalized;
 		}
-		legalMoves.add(option);
+		options.add(new PlayOption(option, score));
+
 	}
 }

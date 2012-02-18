@@ -124,7 +124,7 @@ function loadMoves() {
           $("#status").html("Moves Found!  Getting more...");
         }
         if (result.status == 'more') {
-          setTimeout(loadMoves, options.length == 0 ? 1000 : 500);
+          setTimeout(loadMoves, 100);
         } else {
           if (options.length < 1) {
             $("#status").html("No moves found");
