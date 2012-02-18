@@ -22,6 +22,11 @@ public class Runner {
 
 		List<Tile> chars = new ArrayList<Tile>();
 		chars.add(new Tile('t'));
+		chars.add(new Tile('r'));
+		chars.add(new Tile('t'));
+		chars.add(new Tile('q'));
+		chars.add(new Tile('t'));
+		chars.add(new Tile('u'));
 		chars.add(new Tile('*', true));
 
 		DawgNode dawg = DawgNode.getInstance(new File("WebContent/words.txt"));
