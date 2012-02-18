@@ -11,13 +11,14 @@ public class DawgNode {
 	public boolean terminal;
 
 	public Map<Character, DawgNode> edges = new HashMap<Character, DawgNode>();
+	static HashMap<File, DawgNode> instances = new HashMap<File, DawgNode>();
 
-	static DawgNode instance;
-
-	public static DawgNode getInstance() {
+	public static DawgNode getInstance(File file) {
+		DawgNode instance = instances.get(file);
 		if (instance == null) {
 			try {
-				instance = makeDawg(new File("WebContent/words.txt"));
+				instance = makeDawg(file);
+				instances.put(file, instance);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}

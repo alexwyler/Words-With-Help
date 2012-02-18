@@ -8,6 +8,7 @@ import java.util.List;
 import com.alexwyler.wwc.chooser.DawgChooser;
 import com.alexwyler.wwc.chooser.PlayChooser;
 import com.alexwyler.wwc.chooser.PlayOption;
+import com.alexwyler.wwc.dawg.DawgNode;
 
 public class Runner {
 
@@ -23,7 +24,8 @@ public class Runner {
 		chars.add(new Tile('c'));
 		chars.add(new Tile('t'));
 
-		PlayChooser chooser = new DawgChooser(game, chars);
+		DawgNode dawg = DawgNode.getInstance(new File("WebContent/words.txt"));
+		PlayChooser chooser = new DawgChooser(game, chars, dawg);
 		List<PlayOption> options = chooser.getOptions();
 
 		if (!options.isEmpty()) {

@@ -30,9 +30,10 @@ import com.alexwyler.wwc.PlayingBoard;
 import com.alexwyler.wwc.Point;
 import com.alexwyler.wwc.Tile;
 import com.alexwyler.wwc.WordsWithFriendsBoard;
-import com.alexwyler.wwc.chooser.NaiveChooser;
+import com.alexwyler.wwc.chooser.DawgChooser;
 import com.alexwyler.wwc.chooser.PlayChooser;
 import com.alexwyler.wwc.chooser.PlayOption;
+import com.alexwyler.wwc.dawg.DawgNode;
 
 /**
  * Servlet implementation class WWCServlet
@@ -129,12 +130,12 @@ public class WWCServlet extends HttpServlet {
 
 					File dictFile = new File(request.getSession()
 							.getServletContext().getRealPath("words.txt"));
-
 					Dictionary dict = Dictionary.getInstance(dictFile);
+					DawgNode dawg = DawgNode.getInstance(dictFile);
 					BoardDescription boardDesc = new WordsWithFriendsBoard();
 					PlayingBoard game = new PlayingBoard(boardDesc, dict,
 							existing, 1);
-					PlayChooser chooser = new NaiveChooser(game, rackChars);
+					PlayChooser chooser = new DawgChooser(game, rackChars, dawg);
 
 					if (COMMAND_START.equals(cmd)) {
 						Collection<PlayOption> options = new HashSet<PlayOption>(
