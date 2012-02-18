@@ -71,7 +71,9 @@ body {
   cursor: arrow;
 }
 
-#moveOptions, #moveOptionsHeader {
+#moveOptions,
+#moveOptionsWrapper,
+#moveOptionsHeader {
   width: 300px;
 }
 
@@ -108,4 +110,5 @@ body {
 .overflow {
   height: 110px;
   overflow-y: scroll; 
+  overflow-x: hidden; 
 }
