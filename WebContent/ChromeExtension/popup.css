@@ -34,9 +34,15 @@ body {
 }
 
 #board td .move {
+  border: solid 1px orange;
+  border-radius: 1px;
   font-weight: bold;
   font-size: 14px;
-  background: rgba(255, 255, 0, .5);
+  background: rgba(255, 255, 0, 1);
+}
+
+#board td .blank {
+  color: silver;
 }
 
 #currentSelection {
