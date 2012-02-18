@@ -21,4 +21,8 @@ public class Point extends java.awt.Point implements Comparable<Point> {
 		}
 	}
 
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
+
 }

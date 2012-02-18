@@ -17,11 +17,8 @@ public class DawgNode {
 	public static DawgNode getInstance() {
 		if (instance == null) {
 			try {
-				System.out.print("Creating DAWG... ");
 				instance = makeDawg(new File("WebContent/words.txt"));
-				System.out.println("DONE.");
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
