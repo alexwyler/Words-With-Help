@@ -18,7 +18,8 @@ public class NaiveChooser extends PlayChooser {
 
 	PlayingBoard game;
 	List<Tile> tiles;
-	Set<List<Tile>> allAnagrams;
+	Set<List<Tile>> curAnagrams;
+	Set<List<Tile>> allAnagrams = new HashSet<List<Tile>>();
 	List<PlayOption> options = Collections
 			.synchronizedList(new ArrayList<PlayOption>());
 	boolean isComplete = false;
@@ -28,48 +29,81 @@ public class NaiveChooser extends PlayChooser {
 		this.tiles = tiles;
 	}
 
+	private List<List<Tile>> explodeRacks(List<Tile> tiles) {
+		LinkedList<List<Tile>> toTest = new LinkedList<List<Tile>>();
+		List<List<Tile>> results = new LinkedList<List<Tile>>();
+		toTest.add(tiles);
+		while (!toTest.isEmpty()) {
+			List<Tile> rackToTest = toTest.removeFirst();
+			int wildCardIdx;
+			for (wildCardIdx = 0; wildCardIdx < rackToTest.size(); wildCardIdx++) {
+				Tile tile = rackToTest.get(wildCardIdx);
+				if (tile.wildcard && tile.isBlank()) {
+					break;
+				}
+			}
+			if (wildCardIdx < rackToTest.size()) {
+				for (char c = 'a'; c <= 'z'; c++) {
+					List<Tile> exploded = new ArrayList<Tile>(rackToTest);
+					exploded.set(wildCardIdx, new Tile(c, true));
+					toTest.add(exploded);
+				}
+			} else {
+				results.add(rackToTest);
+			}
+		}
+		return results;
+	}
+
 	@Override
 	public List<PlayOption> getOptions() throws GameStateException {
-		Set<Point> testedPoints = new HashSet<Point>();
-		Collection<PlaySet> moves = new HashSet<PlaySet>();
 		List<Point> preExisting = game.getAllPoints();
 		if (preExisting.isEmpty()) {
 			preExisting.add(new Point(game.getBoard().getWidth() / 2, game
 					.getBoard().getHeight() / 2));
 		}
-		allAnagrams = Anagramer.powerList(tiles);
-		LinkedList<Point> pointsToCheck = new LinkedList<Point>();
-		for (Point point : preExisting) {
-			pointsToCheck.add(point);
-			pointsToCheck.add(new Point(point.x - 1, point.y));
-			pointsToCheck.add(new Point(point.x + 1, point.y));
-			pointsToCheck.add(new Point(point.x, point.y - 1));
-			pointsToCheck.add(new Point(point.x, point.y + 1));
-			while (!pointsToCheck.isEmpty()) {
-				Point pointToCheck = pointsToCheck.removeFirst();
-				if (testedPoints.contains(pointToCheck)) {
-					continue;
-				} else {
-					testedPoints.add(pointToCheck);
-					List<PlaySet> availableMoves = getAllAvailableMoves(pointToCheck);
-					for (PlaySet move : availableMoves) {
-						if (moves.contains(move)) {
-							continue;
-						} else {
-							moves.add(move);
-						}
-						try {
-							game.placeLetters(move);
-							String vio = game.getPendingViolation();
-							if (vio == null) {
-								int score = game.scorePending();
-								options.add(new PlayOption(move, score));
+		List<List<Tile>> racksToTest = explodeRacks(tiles);
+		for (List<Tile> curRack : racksToTest) {
+			Set<Point> testedPoints = new HashSet<Point>();
+			Collection<PlaySet> moves = new HashSet<PlaySet>();
+			curAnagrams = Anagramer.powerList(curRack);
+			LinkedList<Point> pointsToCheck = new LinkedList<Point>();
+			for (Point point : preExisting) {
+				pointsToCheck.add(point);
+				pointsToCheck.add(new Point(point.x - 1, point.y));
+				pointsToCheck.add(new Point(point.x + 1, point.y));
+				pointsToCheck.add(new Point(point.x, point.y - 1));
+				pointsToCheck.add(new Point(point.x, point.y + 1));
+				while (!pointsToCheck.isEmpty()) {
+					Point pointToCheck = pointsToCheck.removeFirst();
+					if (testedPoints.contains(pointToCheck)) {
+						continue;
+					} else {
+						testedPoints.add(pointToCheck);
+						List<PlaySet> availableMoves = getAllAvailableMoves(pointToCheck);
+						for (PlaySet move : availableMoves) {
+							if (moves.contains(move)) {
+								continue;
 							} else {
+								moves.add(move);
 							}
-						} catch (InvalidPlayException e) {
-							e.printStackTrace();
+							try {
+								game.placeLetters(move);
+								
+								String vio = game.getPendingViolation();
+								if (vio == null) {
+									int score = game.scorePending();
+									options.add(new PlayOption(move, score));
+								} else {
+									if (vio.toLowerCase().contains("ab")) {
+										game.printBoard(false);
+									}
+								}
+							} catch (InvalidPlayException e) {
+								e.printStackTrace();
+							}
+							game.discardPending();
 						}
-						game.discardPending();
 					}
 				}
 			}
@@ -82,7 +116,7 @@ public class NaiveChooser extends PlayChooser {
 	public List<PlaySet> getAllAvailableMoves(Point point) {
 		List<PlaySet> moves = new ArrayList<PlaySet>();
 		int j;
-		for (List<Tile> anagram : allAnagrams) {
+		for (List<Tile> anagram : curAnagrams) {
 			for (int i = 0; i <= anagram.size(); i++) {
 				PlaySet downCachedVal = new MapPlaySet();
 				PlaySet leftCachedVal = new MapPlaySet();

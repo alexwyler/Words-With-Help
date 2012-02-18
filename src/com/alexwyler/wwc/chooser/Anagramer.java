@@ -38,7 +38,8 @@ public class Anagramer {
 		Set<List<Tile>> results = new HashSet<List<Tile>>();
 		for (List<Tile> anagram : unexploded) {
 			for (int i = 0; i < anagram.size(); i++) {
-				if (anagram.get(i).wildcard) {
+				Tile t = anagram.get(i);
+				if (t.wildcard && t.isBlank()) {
 					for (char c = 'a'; c <= 'z'; c++) {
 						List<Tile> newList = new ArrayList<Tile>(anagram);
 						newList.set(i, new Tile(c, true));

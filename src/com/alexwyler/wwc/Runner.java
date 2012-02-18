@@ -30,6 +30,7 @@ public class Runner {
 
 		if (!options.isEmpty()) {
 			for (PlayOption option : options) {
+				System.out.println(option);
 				game.placeLetters(option.getMove());
 				game.printBoard(true);
 				game.discardPending();
