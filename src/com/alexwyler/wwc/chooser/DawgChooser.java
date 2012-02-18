@@ -59,15 +59,24 @@ public class DawgChooser extends PlayChooser {
 		for (int y = 0; y < 15; y++) {
 
 			List<Point> anchors = new ArrayList<Point>();
-			for (int x = 0; x < 15; x++) {
-				Point p = new Point(x, y);
-				Point right = new Point(x + 1, y);
-				Point left = new Point(x - 1, y);
-				Point down = new Point(x, y + 1);
-				if (game.inBounds(right) && game.letterAt(right) != null
-						|| game.inBounds(down) && game.letterAt(down) != null
-						|| game.inBounds(left) && game.letterAt(left) != null) {
-					anchors.add(p);
+
+			if (!game.isBoardEmpty()) {
+				for (int x = 0; x < 15; x++) {
+					Point p = new Point(x, y);
+					Point right = new Point(x + 1, y);
+					Point left = new Point(x - 1, y);
+					Point down = new Point(x, y + 1);
+					if (game.inBounds(right) && game.letterAt(right) != null
+							|| game.inBounds(down)
+							&& game.letterAt(down) != null
+							|| game.inBounds(left)
+							&& game.letterAt(left) != null) {
+						anchors.add(p);
+					}
+				}
+			} else {
+				for (int x = 1; x <= 7; x++) {
+					anchors.add(new Point(x, y));
 				}
 			}
 
