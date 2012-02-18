@@ -154,15 +154,17 @@ function loadOption(move) {
   $('#scoreContainer').show();
   $("#points").html(move.score);
   for ( var i in move.plays) {
+    console.log(move.plays[i].wildcard);
     var letter = move.plays[i].letter.toUpperCase();
-    if (move.plays[i].blankLetter) {
+    if (move.plays[i].wildcard) {
       $("tr[row=\"" + move.plays[i].y + "\"]").children(
         "td[col=\"" + move.plays[i].x + "\"]").html(
-          "<div class='blankMove'>" + letter + "<div/>").addClass("active");
+          "<div class='blank move'>" + letter + "<div/>").addClass("active");
+    } else {
+      $("tr[row=\"" + move.plays[i].y + "\"]").children(
+        "td[col=\"" + move.plays[i].x + "\"]").html(
+          "<div class='move'>" + letter + "<div/>").addClass("active");
     }
-    $("tr[row=\"" + move.plays[i].y + "\"]").children(
-      "td[col=\"" + move.plays[i].x + "\"]").html(
-        "<div class='move'>" + letter + "<div/>").addClass("active");
   }
 }
 
