@@ -33,7 +33,7 @@ function search() {
 	      children(".tile").children(".letter").html();
       var placedBlank = game.find(".space_" + i + "_" + j).
 	      children(".tile").find(".points-0").html();
-      placedLetter = placedBlank != null ? placedBlank : placedLetter;
+      placedLetter = placedBlank != null ? "*" : placedLetter;
       if (placedLetter != null) {
 	      rack[missing.pop()] = placedLetter;
         board[i][j] = null;
