@@ -1,7 +1,7 @@
 {
   "name": "Words With Help",
 
-  "version": "1.2",
+  "version": "1.22",
 
   "icons": {
     "128": "icon.png"
@@ -13,8 +13,7 @@
     "https://wwf-fb.zyngawithfriends.com/*",
     "http://apps.facebook.com/wordswithfriends/*", 
     "https://apps.facebook.com/wordswithfriends/*",
-    "http://ec2-107-22-41-246.compute-1.amazonaws.com/*",
-    "http://*/"
+    "http://ec2-107-22-41-246.compute-1.amazonaws.com/*"
   ],
 
   "browser_action": {
