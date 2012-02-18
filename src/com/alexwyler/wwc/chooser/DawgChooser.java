@@ -1,6 +1,7 @@
 package com.alexwyler.wwc.chooser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -18,8 +19,8 @@ import com.alexwyler.wwc.dawg.DawgNode;
 public class DawgChooser extends PlayChooser {
 
 	boolean isComplete = false;
-	List<PlayOption> options = new ArrayList<PlayOption>();
-	List<PlaySet> legalMoves = new ArrayList<PlaySet>();
+	List<PlayOption> options = Collections
+			.synchronizedList(new ArrayList<PlayOption>());
 	List<PlayOption> curOptions = new ArrayList<PlayOption>();
 	Set<PlaySet> seenMoves = new HashSet<PlaySet>();
 	Map<Point, Set<Character>> crossSets = new HashMap<Point, Set<Character>>();
@@ -55,32 +56,11 @@ public class DawgChooser extends PlayChooser {
 		game.flip();
 		getAcrossOptions();
 		game.flip();
-
-		for (PlaySet move : legalMoves) {
-			if (seenMoves.contains(move)) {
-				continue;
-			} else {
-				seenMoves.add(move);
-			}
-			try {
-				game.placeLetters(move);
-				String vio = game.getPendingViolation();
-				if (vio == null) {
-					int score = game.scorePending();
-					options.add(new PlayOption(move, score));
-				} else {
-				}
-			} catch (InvalidPlayException e) {
-				e.printStackTrace();
-			}
-			game.discardPending();
-		}
-
 		isComplete = true;
 		return options;
 	}
 
-	private void getAcrossOptions() {
+	private void getAcrossOptions() throws GameStateException {
 		calculateCrossChecks();
 		for (int y = 0; y < 15; y++) {
 
@@ -135,7 +115,7 @@ public class DawgChooser extends PlayChooser {
 	}
 
 	private void leftPart(LinkedList<Tile> partial, DawgNode node, int limit,
-			Point anchor) {
+			Point anchor) throws GameStateException {
 		extendRight(partial, node, anchor);
 		if (limit > 0) {
 			// TODO: iterate over rack instead of edge here, because blanks
@@ -155,7 +135,7 @@ public class DawgChooser extends PlayChooser {
 	}
 
 	private void extendRight(LinkedList<Tile> partial, DawgNode node,
-			Point square) {
+			Point square) throws GameStateException {
 		if (game.inBounds(square)) {
 			if (game.letterAt(square) == null) {
 				if (node.terminal) {
@@ -232,7 +212,8 @@ public class DawgChooser extends PlayChooser {
 		return ret;
 	}
 
-	private void recordMove(List<Tile> word, Point terminator) {
+	private void recordMove(List<Tile> word, Point terminator)
+			throws GameStateException {
 		PlaySet move = new MapPlaySet();
 		Point cur = new Point(terminator.x - 1, terminator.y);
 		int i = word.size() - 1;
@@ -246,7 +227,25 @@ public class DawgChooser extends PlayChooser {
 		recordMove(move);
 	}
 
-	private void recordMove(PlaySet option) {
+	private void recordMove(PlaySet option) throws GameStateException {
+		int score = -1;
+		try {
+			game.placeLetters(option);
+			String vio = game.getPendingViolation();
+			if (vio == null) {
+				score = game.scorePending();
+			}
+		} catch (InvalidPlayException e) {
+			e.printStackTrace();
+		}
+		game.discardPending();
+
+		if (score < 0 || seenMoves.contains(option)) {
+			return;
+		} else {
+			seenMoves.add(option);
+		}
+
 		if (game.isFlipped()) {
 			PlaySet normalized = new MapPlaySet();
 			for (Point p : option.getPoints()) {
@@ -254,6 +253,7 @@ public class DawgChooser extends PlayChooser {
 			}
 			option = normalized;
 		}
-		legalMoves.add(option);
+		options.add(new PlayOption(option, score));
+
 	}
 }
