@@ -29,7 +29,13 @@ public class DawgChooser extends PlayChooser {
 
 	public DawgChooser(PlayingBoard game, List<Tile> tiles, DawgNode dawg) {
 		this.game = game;
-		this.tiles = tiles;
+		List<Tile> nonBlanks = new LinkedList<Tile>();
+		for (Tile tile : tiles) {
+			if (!tile.wildcard) {
+				nonBlanks.add(tile);
+			}
+		}
+		this.tiles = nonBlanks;
 		this.dawg = dawg;
 	}
 
@@ -106,7 +112,7 @@ public class DawgChooser extends PlayChooser {
 					LinkedList<Tile> partial = new LinkedList<Tile>();
 					DawgNode node = dawg;
 					cur = new Point(cur.x + 1, cur.y);
-					while (game.letterAt(cur) != null) {
+					while (game.inBounds(cur) && game.letterAt(cur) != null) {
 						partial.add(game.letterAt(cur));
 						node = node.edges.get(Character.toLowerCase(game
 								.letterAt(cur).c));
