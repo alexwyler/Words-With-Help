@@ -9,7 +9,7 @@ public class SomeGames {
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-			new Tile[] { null, null, null, null, null, null, null, c('A'), null, null, null, null, null, null, null },
+			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, c('T'), null, null },
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },
 			new Tile[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null },

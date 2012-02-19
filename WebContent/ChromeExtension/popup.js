@@ -74,7 +74,7 @@ function buildLinks(words) {
 	  for (var j = 0; j < words.length; j++) {
 	    links += "<a target=\"_blank\" " +
 	      "href=\"https://www.google.com/search?btnG=1&pws=0&q=define:" + words[j] + "\">" +
-	      words[j] + "</a>&nbsp;";
+	      words[j].toUpperCase() + "</a>&nbsp;";
 	  }
   }
   return links;
@@ -113,10 +113,13 @@ function loadMoves() {
         options = options.splice(0, 12);
         $(".option").remove();
         for ( var i = 0; i < options.length; i++) {
+          var words = "" + options[i].words;
           $("#moveOptions").append(
             "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
-              "<td width='20%'>" + options[i].score + "</td>" + 
-              "<td width='80%'>" + options[i].words + "</td>" + 
+              "<td>" + 
+                "<a href='#'>" + options[i].score + " - " +
+                words.toUpperCase() + "</a>" + 
+              "</td>" + 
             "</tr>"
           );
         }
@@ -143,10 +146,9 @@ function loadMoves() {
 
 function selectOption(idx) {
   clearBoard();
-  $("#currentSelection").html(
-    "<td width='20%'>" + options[idx].score + "</td>" +
-    "<td width='80%'>" + buildLinks(options[idx].words) + "</td>" 
-  );
+  $("#currentSelection").html(buildLinks(options[idx].words));
+  $(".option").removeClass("selected");
+  $("#option" + idx).addClass("selected");
   loadOption(options[idx]);
 }
 
@@ -154,7 +156,6 @@ function loadOption(move) {
   $('#scoreContainer').show();
   $("#points").html(move.score);
   for ( var i in move.plays) {
-    console.log(move.plays[i].wildcard);
     var letter = move.plays[i].letter.toUpperCase();
     if (move.plays[i].wildcard) {
       $("tr[row=\"" + move.plays[i].y + "\"]").children(

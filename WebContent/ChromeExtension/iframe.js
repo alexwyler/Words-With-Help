@@ -30,12 +30,15 @@ function search() {
     for (var j = 0; j < 15; j++) {
       var letter = game.find(".space_" + i + "_" + j).children(".tile").html();
       var placedLetter = game.find(".space_" + i + "_" + j).
-	    children(".tile").children(".letter").html();
+	      children(".tile").children(".letter").html();
+      var placedBlank = game.find(".space_" + i + "_" + j).
+	      children(".tile").find(".points-0").html();
+      placedLetter = placedBlank != null ? "*" : placedLetter;
       if (placedLetter != null) {
-	rack[missing.pop()] = placedLetter;
+	      rack[missing.pop()] = placedLetter;
         board[i][j] = null;
       } else {
-	board[i][j] = letter;
+	      board[i][j] = letter;
       }
     }
   }

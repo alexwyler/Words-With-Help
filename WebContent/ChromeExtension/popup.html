@@ -1,13 +1,26 @@
 <link href="popup.css" title="compact" rel="stylesheet" type="text/css">
 
 <body>
+   <script>
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-29315180-1']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = 'https://ssl.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+     })();
+   </script>
 
 <div class="center">
 <span id="status">No Words With Friends Board Found</span>
 <br/>
 <span id="scoreContainer">
-<span>Score: </span>
-<span id="points" class="red"></span>
+  <span> Words: </span>
+  <span id="currentSelection"></span>
+  <span> Score: </span>
+  <span id="points" class="red"></span>
 </span>
 </div>
 
@@ -297,18 +310,11 @@
 </div>
 <br/>
 
-
-<table id="moveOptionsHeader" class="center">
-  <tr id="header">
-    <td width="20%">Score</td>
-    <td width="80%">Words</td>
-  </tr>
-  <tr id="currentSelection"></tr>
-</table>
-
-<div id="moveOptionsWrapper" class="overflow center">
-  <table id="moveOptions" class="center">
-  </table>
+<div id="moveOptionsWrapper" class="center">
+  <div class="overflow">
+    <table id="moveOptions" class="center">
+    </table>
+  </div>
 </div>
 
 </body>
