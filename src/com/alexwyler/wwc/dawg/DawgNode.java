@@ -2,6 +2,7 @@ package com.alexwyler.wwc.dawg;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -55,6 +56,10 @@ public class DawgNode {
 
 	public DawgNode getChild(char c) {
 		return edges.get(Character.toLowerCase(c));
+	}
+
+	public Collection<Character> getNextCharacters() {
+		return edges.keySet();
 	}
 
 }

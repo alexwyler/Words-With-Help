@@ -153,7 +153,9 @@ public class DawgChooser extends PlayChooser {
 					toChecks.add(removed);
 				}
 				for (Tile toCheck : toChecks) {
-					if (crossSet != null && !crossSet.contains(toCheck.c)) {
+					if (crossSet != null
+							&& !crossSet.contains(Character
+									.toLowerCase(toCheck.c))) {
 						continue;
 					}
 					DawgNode next = node.getChild(toCheck);
@@ -164,7 +166,7 @@ public class DawgChooser extends PlayChooser {
 						partial.removeLast();
 					}
 				}
-				tiles.add(removed);
+				tiles.add(i, removed);
 			}
 		} else {
 			Tile letter = game.letterAt(square);
@@ -195,7 +197,7 @@ public class DawgChooser extends PlayChooser {
 		if (game.inBounds(down) && game.letterAt(down) != null) {
 			ret = new HashSet<Character>();
 			for (char c = 'a'; c <= 'z'; c++) {
-				DawgNode cur = dawg;
+				DawgNode cur = dawg.getChild(c);
 				boolean valid = true;
 				Point next = new Point(p.x, p.y + 1);
 				while (cur != null) {
