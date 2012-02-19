@@ -20,7 +20,8 @@ public class Runner {
 		Tile[][] current = SomeGames.stacey;
 		PlayingBoard game = new PlayingBoard(board, dict, current, 1);
 		List<Tile> chars = new ArrayList<Tile>();
-		chars.add(new Tile('o'));
+		chars.add(new Tile('T'));
+		chars.add(new Tile('A'));
 
 		DawgNode dawg = DawgNode.getInstance(new File("WebContent/words.txt"));
 		PlayChooser chooser = new DawgChooser(game, chars, dawg);
