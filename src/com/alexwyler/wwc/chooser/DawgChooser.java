@@ -55,7 +55,6 @@ public class DawgChooser extends PlayChooser {
 	}
 
 	private void getAcrossOptions() throws GameStateException {
-		calculateCrossChecks();
 		for (int y = 0; y < 15; y++) {
 
 			List<Point> anchors = new ArrayList<Point>();
@@ -66,11 +65,13 @@ public class DawgChooser extends PlayChooser {
 					Point right = new Point(x + 1, y);
 					Point left = new Point(x - 1, y);
 					Point down = new Point(x, y + 1);
+					Point up = new Point(x, y - 1);
 					if (game.inBounds(right) && game.letterAt(right) != null
 							|| game.inBounds(down)
 							&& game.letterAt(down) != null
 							|| game.inBounds(left)
-							&& game.letterAt(left) != null) {
+							&& game.letterAt(left) != null || game.inBounds(up)
+							&& game.letterAt(up) != null) {
 						anchors.add(p);
 					}
 				}
@@ -178,49 +179,6 @@ public class DawgChooser extends PlayChooser {
 				partial.removeLast();
 			}
 		}
-	}
-
-	private void calculateCrossChecks() {
-		for (int y = 0; y < 15; y++) {
-			for (int x = 0; x < 15; x++) {
-				Point p = new Point(x, y);
-				if (game.letterAt(p) == null) {
-					crossSets.put(p, getCrossCheck(p));
-				}
-			}
-		}
-	}
-
-	private Set<Character> getCrossCheck(Point p) {
-		Set<Character> ret = null;
-		Point down = new Point(p.x, p.y + 1);
-		if (game.inBounds(down) && game.letterAt(down) != null) {
-			ret = new HashSet<Character>();
-			for (char c = 'a'; c <= 'z'; c++) {
-				DawgNode cur = dawg.getChild(c);
-				boolean valid = true;
-				Point next = new Point(p.x, p.y + 1);
-				while (cur != null) {
-					if (!game.inBounds(next) || game.letterAt(next) == null) {
-						valid = cur.terminal;
-						break;
-					}
-					Tile nextTile = game.letterAt(next);
-					cur = cur.getChild(nextTile);
-					if (cur == null) {
-						valid = false;
-						break;
-					} else {
-						next = new Point(next.x, next.y + 1);
-					}
-				}
-
-				if (valid) {
-					ret.add(c);
-				}
-			}
-		}
-		return ret;
 	}
 
 	private void recordMove(List<Tile> word, Point terminator)

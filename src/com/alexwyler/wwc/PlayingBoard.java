@@ -263,6 +263,9 @@ public class PlayingBoard {
 		for (List<Point> word : createdWords) {
 			score += scoreWord(word);
 		}
+		if (pendingPoints.size() >= board.numTilesForScrabble()) {
+			score += board.scrabbleBonus();
+		}
 		return score;
 	}
 

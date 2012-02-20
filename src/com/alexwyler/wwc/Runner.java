@@ -22,6 +22,7 @@ public class Runner {
 		List<Tile> chars = new ArrayList<Tile>();
 		chars.add(new Tile('T'));
 		chars.add(new Tile('A'));
+		chars.add(new Tile('P'));
 
 		DawgNode dawg = DawgNode.getInstance(new File("WebContent/words.txt"));
 		PlayChooser chooser = new DawgChooser(game, chars, dawg);
@@ -29,7 +30,6 @@ public class Runner {
 
 		if (!options.isEmpty()) {
 			for (PlayOption option : options) {
-				System.out.println(option);
 				game.placeLetters(option.getMove());
 				game.printBoard(true);
 				game.discardPending();
