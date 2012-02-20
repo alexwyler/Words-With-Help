@@ -192,9 +192,18 @@ public class WWCServlet extends HttpServlet {
 		if (responseJSON == null) {
 			internalError();
 		}
-		// System.err.println(responseJSON.toString());
-		PrintWriter out = response.getWriter();
-		out.append(responseJSON.toString());
+		String responseStr = responseJSON.toString();
+		int length = responseStr.length();
+		int limit = Math.min(length, 100);
+		String truncResponseStr = responseStr.substring(0, limit);
+		if (length > 100) {
+			truncResponseStr += "...";
+		}
+
+		String remoteAddr = request.getRemoteAddr();
+
+		System.err.println(remoteAddr + " - " + truncResponseStr);
+		response.getWriter().append(responseStr);
 	}
 
 	private void internalError() {

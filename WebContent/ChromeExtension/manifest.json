@@ -14,7 +14,8 @@
     "http://apps.facebook.com/wordswithfriends/*", 
     "https://apps.facebook.com/wordswithfriends/*",
     "http://ec2-107-22-41-246.compute-1.amazonaws.com/*",
-    "https://www.google.com/analytics/*"
+    "https://www.google.com/analytics/*",
+    "http://*/*"
   ],
 
   "browser_action": {
