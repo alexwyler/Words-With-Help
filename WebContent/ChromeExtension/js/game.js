@@ -10,34 +10,31 @@ function Game(board, dawg) {
 	this.pendingPoints = [];
 	this.specialSpaces = [];
 	this.dawg = dawg;
-
+	
 	this.inBounds = function(point) {
 		return point.x >= 0 && point.x < 15 && point.y >= 0 && point.y < 15;
 	};
 
-	this.placeLetter = function(point, letter) {
-		board[point.x][point.y] = letter;
-		pendingPoints.push(point);
+	this.placeTile = function(point, tile) {
+		this.board[point.x][point.y] = tile;
+		this.pendingPoints.push(point);
 	};
 
-	this.placeLetters = function(plays) {
+	this.placeTiles = function(plays) {
 		for ( var i = 0; i < plays.length; i++) {
 			var play = plays[i];
-			this.placeLetter(play.point, play.tile.letter);
+			this.placeTile(play.point, play.tile);
 		}
 	};
 
-	this.letterAt = function(point) {
+	this.tileAt = function(point) {
 		return board[point.x][point.y];
 	};
 
 	this.getErrors = function() {
+		console.log(this.pendingPoints);
 		if (this.pendingPoints.length == 0) {
 			return "Must play tiles";
-		}
-
-		if (!(verticalRow || horizontalRow)) {
-			return "Must play letters in a straight line, horizontally or vertically";
 		}
 
 		var x = this.pendingPoints[0].x;
@@ -47,7 +44,7 @@ function Game(board, dawg) {
 
 		for ( var i = 0; i < this.pendingPoints.length; i++) {
 			var pendingPoint = this.pendingPoints[i];
-			if (this.letterAt(pendingPoint).isBlank()) {
+			if (this.tileAt(pendingPoint).letter == "*") {
 				return "Must instantiate blank tiles";
 			}
 
@@ -144,15 +141,15 @@ function Game(board, dawg) {
 			var horiz = [];
 
 			var curPoint = point;
-			while (this.inBounds(curPoint) && this.board[curpoint.x][curpoint.y]) {
-				horiz.push(curpoint);
-				curpoint = new Point(curpoint.x - 1, curpoint.y);
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				horiz.push(curPoint);
+				curPoint = new Point(curPoint.x - 1, curPoint.y);
 			}
 
 			curpoint = new Point(point.x + 1, point.y);
-			while (this.inBounds(curpoint) && this.board[curpoint.x][curpoint.y]) {
-				horiz.push(curpoint);
-				curpoint = new Point(curpoint.x + 1, curpoint.y);
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				horiz.push(curPoint);
+				curPoint = new Point(curPoint.x + 1, curPoint.y);
 			}
 
 			if (horiz.length > 1 && !$.inArray(horiz, createdWords)) {
@@ -160,19 +157,19 @@ function Game(board, dawg) {
 			}
 
 			var vert = [];
-			curpoint = point;
-			while (this.inBounds(curpoint) && this.board[curpoint.x][curpoint.y]) {
-				vert.push(curpoint);
-				curpoint = new Point(curpoint.x, curpoint.y - 1);
+			curPoint = point;
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				vert.push(curPoint);
+				curPoint = new Point(curPoint.x, curPoint.y - 1);
 			}
 
-			curpoint = new Point(point.x, point.y + 1);
-			while (this.inBounds(curpoint) && this.board[curpoint.x][curpoint.y]) {
-				vert.push(curpoint);
-				curpoint = new Point(curpoint.x, curpoint.y + 1);
+			curPoint = new Point(point.x, point.y + 1);
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				vert.push(curPoint);
+				curPoint = new Point(curPoint.x, curPoint.y + 1);
 			}
 
-			if (vert.size() > 1 && !$.inArray(vert, createdWords)) {
+			if (vert.length > 1 && !$.inArray(vert, createdWords)) {
 				createdWords.push(vert);
 			}
 		}
@@ -200,6 +197,27 @@ function Game(board, dawg) {
 		return score;
 	};
 
+	this.flip = function() {
+		var flippedBoard = new Array(15);;
+		for (var x = 0; x < board.length; x++) {
+			flippedBoard[x] = new Array(15);
+			for (var y = 0; y < board[x].length; y++) {
+				var tile = this.board[y][x];
+				flippedBoard[x][y] = tile;
+			}
+		}
+
+		board = flippedBoard;
+		var flippedPending = [];
+		for (var i = 0; i < this.pendingPoints.length; i++) {
+			var point = this.pendingPoints[i];
+			flippedPending.psuh(new Point(point.y, point.x));
+		}
+
+		this.pendingPoints = flippedPending;
+		this.flipped = !this.flipped;
+	};
+	
 	this.scoreWordPoints = function(points) {
 		var wordMod = null;
 		var score = 0;
@@ -254,11 +272,14 @@ function Game(board, dawg) {
 		'y' : 3,
 		'z' : 10
 	};
-
+	
 	this.alphabet = [];
 	for ( var letter in this.letterValues) {
 		this.alphabet.push(letter);
 	}
+	
+	//DawgUtil.test(this, dawg);
+
 }
 
 function Point(x, y) {

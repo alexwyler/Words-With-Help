@@ -22,10 +22,10 @@ function Chooser(game, rack) {
 					left = new Point(x - 1, y);
 					down = new Point(x, y + 1);
 					up = new Point(x, y - 1);
-					if (this.game.inBounds(right) && this.game.letterAt(right)
-							|| this.game.inBounds(down) && this.game.letterAt(down)
-							|| this.game.inBounds(left) && this.game.letterAt(left)
-							|| this.game.inBounds(up) && this.game.letterAt(up)) {
+					if (this.game.inBounds(right) && this.game.tileAt(right)
+							|| this.game.inBounds(down) && this.game.tileAt(down)
+							|| this.game.inBounds(left) && this.game.tileAt(left)
+							|| this.game.inBounds(up) && this.game.tileAt(up)) {
 						anchors.push(p);
 					}
 				}
@@ -37,26 +37,25 @@ function Chooser(game, rack) {
 				}
 			}
 
-			console.log(anchors);
 			for ( var i = 0; i < anchors.length; i++) {
 				var p = anchors[i];
 				var limit = 0;
 				var left = new Point(p.x - 1, p.y);
-				while (this.game.inBounds(left) && !this.game.letterAt(left)) {
+				while (this.game.inBounds(left) && !this.game.tileAt(left)) {
 					limit++;
 					left = new Point(left.x - 1, left.y);
 				}
 				if (limit == 0) {
 					cur = new Point(p.x - 1, p.y);
-					while (this.game.inBounds(cur) && this.game.letterAt(cur)) {
+					while (this.game.inBounds(cur) && this.game.tileAt(cur)) {
 						cur = new Point(cur.x - 1, cur.y);
 					}
 					/* array<Tile> */var partial = [];
 					/* DawgNode */var node = this.game.dawg;
 					cur = new Point(cur.x + 1, cur.y);
-					while (this.game.inBounds(cur) && this.game.letterAt(cur)) {
-						partial.push(this.game.letterAt(cur));
-						node = node[this.game.letterAt(cur)];
+					while (this.game.inBounds(cur) && this.game.tileAt(cur)) {
+						partial.push(this.game.tileAt(cur));
+						node = node[this.game.tileAt(cur).letter];
 						cur = new Point(cur.x + 1, cur.y);
 					}
 					this.extendRight(partial, node, p);
@@ -68,14 +67,47 @@ function Chooser(game, rack) {
 	};
 
 	this.leftPart = function(/* array<Tile> */partial, /* DawgNode */node,
-			limit, anchor) {
-		console.log("LEFT PART ");
-		console.log(partial);
-		console.log(anchor);
+			limit, anchor) {;
 		this.extendRight(partial, node, anchor);
 		if (limit > 0) {
 			for ( var i = 0; i < this.rack.length; i++) {
-				/* Tile */var removed = this.rack.splice(i, 1);
+				// todo: wtf
+				/* Tile */var removed = this.rack.splice(i, 1)[0];
+				/* array<Tile> */var toChecks = [];
+				if (removed.wildcard) {
+					for ( var idx in this.game.alphabet) {
+						var letter = this.game.alphabet[idx];
+						toChecks.push(new Tile(letter, true));
+					}
+				} else {
+					toChecks.push(removed);
+				}
+				
+				for ( var j = 0; j < toChecks.length; j++) {
+					var toCheck = toChecks[j];
+					var next = node[toCheck.letter];
+					if (next) {
+						partial.push(toCheck);
+						this.leftPart(partial, next, limit - 1, anchor);
+						partial.pop();
+					}
+				}
+				this.rack.splice(i, 0, removed);
+			}
+		}
+	};
+
+	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
+			point) {
+//		console.log("EXTEND RIGHT");
+//		console.log(partial);
+//		console.log(point);
+		if (node["_"]) {
+			this.recordMove(partial, point);
+		}
+		if (this.game.inBounds(point) && !this.game.tileAt(point)) {
+			for ( var i = 0; i < this.rack.length; i++) {
+				/* Tile */var removed = this.rack.splice(i, 1)[0];
 				/* array<Tile> */var toChecks = [];
 				if (removed.wildcard) {
 					for ( var idx in this.game.alphabet) {
@@ -90,49 +122,15 @@ function Chooser(game, rack) {
 					var next = node[toCheck.letter];
 					if (next) {
 						partial.push(toCheck);
-						leftPart(partial, next, limit - 1, anchor);
-						partial.pop();
-					}
-				}
-				this.rack.splice(i, 0, removed);
-			}
-		}
-	};
-
-	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
-			point) {
-		console.log("EXTEND RIGHT");
-		console.log(partial);
-		console.log(point);
-		if (node["_"]) {
-			this.recordMove(partial, point);
-		}
-		if (this.game.inBounds(point) && this.game.letterAt(point)) {
-			for ( var i = 0; i < this.rack.length; i++) {
-				/* Tile */var removed = this.rack.splice(i, 1);
-				/* array<Tile> */var toChecks = [];
-				if (removed.wildcard) {
-					for ( var idx in this.game.alphabet) {
-						var letter = this.game.alphabet[idx];
-						toChecks.push(new Tile(letter, true));
-					}
-				} else {
-					toChecks.add(removed);
-				}
-				for ( var j = 0; j < toChecks.length; j++) {
-					var toCheck = toChecks[j];
-					var next = node[toCheck.letter];
-					if (next) {
-						partial.push(toCheck);
-						right = new Point(square.x + 1, square.y);
-						extendRight(partial, next, right);
+						right = new Point(point.x + 1, point.y);
+						this.extendRight(partial, next, right);
 						partial.pop();
 					}
 				}
 				this.rack.splice(i, 0, removed);
 			}
 		} else {
-			var tile = this.game.letterAt(point);
+			var tile = this.game.tileAt(point);
 			var next = node[tile.letter];
 			if (next) {
 				partial.push(tile);
@@ -144,27 +142,33 @@ function Chooser(game, rack) {
 	};
 
 	this.recordMove = function(/* array<Tile> */partial, terminal) {
+		console.log("RECORD");
+		console.log(partial);
+		console.log(terminal);
 		var plays = [];
-		var curPoint = new Point(terminator.x - 1, terminator.y);
+		var curPoint = new Point(terminal.x - 1, terminal.y);
 		var i = partial.length - 1;
 
 		while (i >= 0 || this.game.inBounds(curPoint)
-				&& this.game.letterAt(curPoint)) {
-			if (this.inBounds(curPoint) && this.game.letterAt(curPoint)) {
+				&& this.game.tileAt(curPoint)) {
+			if (this.game.inBounds(curPoint) && this.game.tileAt(curPoint)) {
 				plays.push({
 					"point" : curPoint,
-					"tile" : partial.get(i)
+					"tile" : partial[i]
 				});
 			}
 			i--;
-			curPoint = new Point(cur.x - 1, cur.y);
+			curPoint = new Point(curPoint.x - 1, curPoint.y);
 		}
 
 		var score = -1;
-		this.game.placeLetters(plays);
+		console.log(plays);
+		this.game.placeTiles(plays);
 		var errors = game.getErrors();
 		if (!errors) {
 			score = game.scorePending();
+		} else {
+			console.log(errors);
 		}
 		game.discardPending();
 

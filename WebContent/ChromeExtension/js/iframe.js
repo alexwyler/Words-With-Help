@@ -42,7 +42,11 @@ function search() {
         var wildcard = false;
         if (blank.length > 0)
           wildcard = true;
-	      board[i][j] = {letter: letter, wildcard: wildcard};
+        if (letter) {
+        	board[i][j] = {letter: letter, wildcard: wildcard};
+        } else {
+        	board[i][j] = null;
+        }
       }
     }
   }
