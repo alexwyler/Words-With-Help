@@ -28,17 +28,21 @@ function search() {
   for (var i = 0; i < 15; i++) {
     board[i] = new Array(15);
     for (var j = 0; j < 15; j++) {
-      var letter = game.find(".space_" + i + "_" + j).children(".tile").html();
-      var placedLetter = game.find(".space_" + i + "_" + j).
-	      children(".tile").children(".letter").html();
-      var placedBlank = game.find(".space_" + i + "_" + j).
-	      children(".tile").find(".points-0").html();
+      var space = game.find(".space_" + i + "_" + j);
+      var tile = space.children(".tile");
+      var placedLetter = tile.children(".letter").html();
+      var placedBlank = tile.find(".points-0").html();
       placedLetter = placedBlank != null ? "*" : placedLetter;
       if (placedLetter != null) {
 	      rack[missing.pop()] = placedLetter;
         board[i][j] = null;
       } else {
-	      board[i][j] = letter;
+        var letter = tile.html();
+        var blank = space.children(".points-0");
+        var wildcard = false;
+        if (blank.length > 0)
+          wildcard = true;
+	      board[i][j] = {letter: letter, wildcard: wildcard};
       }
     }
   }
