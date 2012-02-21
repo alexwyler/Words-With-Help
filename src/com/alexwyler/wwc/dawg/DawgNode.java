@@ -2,10 +2,15 @@ package com.alexwyler.wwc.dawg;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
 
 import com.alexwyler.wwc.Tile;
 
@@ -15,6 +20,27 @@ public class DawgNode {
 	private Map<Character, DawgNode> edges = new HashMap<Character, DawgNode>();
 
 	static HashMap<File, DawgNode> instances = new HashMap<File, DawgNode>();
+
+	public static void main(String argsp[]) throws JSONException, IOException {
+		DawgNode root = getInstance(new File("WebContent/words.txt"));
+		JSONObject rootJSON = convertToJSON(root);
+		FileWriter out = new FileWriter(new File("WebContent/ChromeExtension/js/dawg.json"));
+		out.append("DawgUtil.dawg = \n");
+		out.append(rootJSON.toString());
+		out.append(";\n");
+		out.close();
+	}
+
+	public static JSONObject convertToJSON(DawgNode node) throws JSONException {
+		JSONObject json = new JSONObject();
+		for (Character c : node.edges.keySet()) {
+			json.put("" + c, convertToJSON(node.getChild(c)));
+			if (node.terminal) {
+				json.put("_", 1);
+			}
+		}
+		return json;
+	}
 
 	public static DawgNode getInstance(File file) {
 		DawgNode instance = instances.get(file);

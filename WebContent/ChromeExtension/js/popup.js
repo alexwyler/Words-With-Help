@@ -54,7 +54,7 @@ function find(test) {
     chrome.tabs.executeScript(
       null, {
         allFrames : true,
-        file : "iframe.js"
+        file : "/js/iframe.js"
       });
   }
 }
@@ -81,67 +81,91 @@ function buildLinks(words) {
 }
 
 function loadMoves() {
-  request = {
-    board : board,
-    rack : rack
-  };
+	if (config.clientDawgz) {
+		var game = new Game(board, DawgUtil.dawg);
+		var chooser = new Chooser(game, rack);
+		updateResults(chooser.getOptions());
+		finalizeResults();
+	} else {
+		loadFromServer();
+	}
+}
 
-  if (loading) {
-    request.command = "async-update";
-  } else {
-    request.command = "async-start";
-    loading = true;
+function loadFromServer() {
+	request = {
+	    board : board,
+	    rack : rack
+	  };
+
+	  if (loading) {
+	    request.command = "async-update";
+	  } else {
+	    request.command = "async-start";
+	    loading = true;
+	  }
+	  request.api = config.api;
+
+	  $.ajax({
+	    url : config.url,
+	    type : "POST",
+	    data : JSON.stringify(request),
+	    dataType : "json",
+	    beforeSend : function(x) {
+	      if (x && x.overrideMimeType) {
+	        x.overrideMimeType("application/j-son;charset=UTF-8");
+	      }
+	    },
+	    success : function(result) {
+	      if (result.error) {
+	      	updateStatus(result.error);
+	      } else {
+	      	processResults(result.options);
+	        if (result.status == 'more') {
+	          setTimeout(loadMoves, 100);
+	        } else {
+	          finalizeResults();
+	          loading = false;
+	        }
+	      }
+	    },
+	    error : function(xhr, ajaxOptions, thrownError) {
+	    	updateStatus("Unable to connect to server");
+	    }
+	  });
+}
+
+
+function updateStatus(html) {
+	$("#status").html(html);
+}
+
+function processResults(results) {
+	options = options.concat(results);
+  options.sort(sortByScore);
+  options = options.splice(0, 12);
+  $(".option").remove();
+  for ( var i = 0; i < options.length; i++) {
+    var words = "" + options[i].words;
+    $("#moveOptions").append(
+      "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
+        "<td>" + 
+          "<a href='#'>" + options[i].score + " - " +
+          words.toUpperCase() + "</a>" + 
+        "</td>" + 
+      "</tr>"
+    );
   }
-  request.api = config.api;
+  if (options.length > 0) {
+    $("#status").html("Moves Found!  Getting more...");
+  }
+}
 
-  $.ajax({
-    url : config.url,
-    type : "POST",
-    data : JSON.stringify(request),
-    dataType : "json",
-    beforeSend : function(x) {
-      if (x && x.overrideMimeType) {
-        x.overrideMimeType("application/j-son;charset=UTF-8");
-      }
-    },
-    success : function(result) {
-      if (result.error) {
-        $("#status").html(result.error);
-      } else {
-        options = options.concat(result.options);
-        options.sort(sortByScore);
-        options = options.splice(0, 12);
-        $(".option").remove();
-        for ( var i = 0; i < options.length; i++) {
-          var words = "" + options[i].words;
-          $("#moveOptions").append(
-            "<tr class=\"option\" onclick=\"selectOption(" + i + ")\" id=\"option" + i + "\">" + 
-              "<td>" + 
-                "<a href='#'>" + options[i].score + " - " +
-                words.toUpperCase() + "</a>" + 
-              "</td>" + 
-            "</tr>"
-          );
-        }
-        if (options.length > 0) {
-          $("#status").html("Moves Found!  Getting more...");
-        }
-        if (result.status == 'more') {
-          setTimeout(loadMoves, 100);
-        } else {
-          if (options.length < 1) {
-            $("#status").html("No moves found");
-          } else {
-            $("#status").html("All moves found!");
-          }
-          loading = false;
-        }
-      }
-    },
-    error : function(xhr, ajaxOptions, thrownError) {
-      $("#status").html("Unable to connect to server");
-    }
-  });
+function finalizeResults() {
+	if (options.length < 1) {
+    $("#status").html("No moves found");
+  } else {
+    $("#status").html("All moves found!");
+  }
 }
 
 function selectOption(idx) {

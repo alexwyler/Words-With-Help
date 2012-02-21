@@ -4,5 +4,5 @@ var config = {
 // 'url' : "http://10.0.0.3:8080/WordsWithCheats/",
 	'url' : "http://127.0.0.1:8080/WordsWithCheats/",
 	'api' : 2,
-	'client' : true
+	'clientDawgz' : true
 };
