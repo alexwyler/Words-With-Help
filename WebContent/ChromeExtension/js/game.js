@@ -10,7 +10,7 @@ function Game(board, dawg) {
 	this.pendingPoints = [];
 	this.specialSpaces = [];
 	this.dawg = dawg;
-	
+
 	this.inBounds = function(point) {
 		return point.x >= 0 && point.x < 15 && point.y >= 0 && point.y < 15;
 	};
@@ -44,9 +44,6 @@ function Game(board, dawg) {
 
 		for ( var i = 0; i < this.pendingPoints.length; i++) {
 			var pendingPoint = this.pendingPoints[i];
-			if (this.tileAt(pendingPoint).letter == "*") {
-				return "Must instantiate blank tiles";
-			}
 
 			if (pendingPoint.x != x) {
 				horiz = false;
@@ -63,8 +60,10 @@ function Game(board, dawg) {
 		var createdWords = this.getCreatedWords();
 
 		if (this.empty) {
-			center = new Point(Math.floor(this.board.length / 2), Math
-					.floor(this.board[0].length / 2));
+			center = {
+				x : Math.floor(this.board.length / 2),
+				y : Math.floor(this.board[0].length / 2)
+			};
 			if (!$.arrayContains(createdWords[0], center)) {
 				return "Must play across center tile on first turn";
 			}
@@ -84,7 +83,8 @@ function Game(board, dawg) {
 				}
 			}
 			if (!connected) {
-				return "Play must connect with existing letters";
+				// todo: fix
+				//return "Play must connect with existing letters";
 			}
 		}
 	};
@@ -143,13 +143,22 @@ function Game(board, dawg) {
 			var curPoint = point;
 			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
 				horiz.push(curPoint);
-				curPoint = new Point(curPoint.x - 1, curPoint.y);
+				curPoint = {
+					x : curPoint.x - 1,
+					y : curPoint.y
+				};
 			}
 
-			curpoint = new Point(point.x + 1, point.y);
+			curpoint = {
+				x : point.x + 1,
+				y : point.y
+			};
 			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
 				horiz.push(curPoint);
-				curPoint = new Point(curPoint.x + 1, curPoint.y);
+				curPoint = {
+					x : curPoint.x + 1,
+					y : curPoint.y
+				};
 			}
 
 			if (horiz.length > 1 && !$.inArray(horiz, createdWords)) {
@@ -160,13 +169,22 @@ function Game(board, dawg) {
 			curPoint = point;
 			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
 				vert.push(curPoint);
-				curPoint = new Point(curPoint.x, curPoint.y - 1);
+				curPoint = {
+					x : curPoint.x,
+					y : curPoint.y - 1
+				};
 			}
 
-			curPoint = new Point(point.x, point.y + 1);
+			curPoint = {
+				x : point.x,
+				y : point.y + 1
+			};
 			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
 				vert.push(curPoint);
-				curPoint = new Point(curPoint.x, curPoint.y + 1);
+				curPoint = {
+					x : curPoint.x,
+					y : curPoint.y + 1
+				};
 			}
 
 			if (vert.length > 1 && !$.inArray(vert, createdWords)) {
@@ -176,9 +194,9 @@ function Game(board, dawg) {
 
 		return createdWords;
 	};
-	
+
 	this.discardPending = function() {
-		for (var i = 0; i < this.pendingPoints.length; i++) {
+		for ( var i = 0; i < this.pendingPoints.length; i++) {
 			var point = this.pendingPoints[i];
 			this.board[point.x][point.y] = null;
 		}
@@ -198,10 +216,11 @@ function Game(board, dawg) {
 	};
 
 	this.flip = function() {
-		var flippedBoard = new Array(15);;
-		for (var x = 0; x < board.length; x++) {
+		var flippedBoard = new Array(15);
+		;
+		for ( var x = 0; x < board.length; x++) {
 			flippedBoard[x] = new Array(15);
-			for (var y = 0; y < board[x].length; y++) {
+			for ( var y = 0; y < board[x].length; y++) {
 				var tile = this.board[y][x];
 				flippedBoard[x][y] = tile;
 			}
@@ -209,15 +228,18 @@ function Game(board, dawg) {
 
 		board = flippedBoard;
 		var flippedPending = [];
-		for (var i = 0; i < this.pendingPoints.length; i++) {
+		for ( var i = 0; i < this.pendingPoints.length; i++) {
 			var point = this.pendingPoints[i];
-			flippedPending.psuh(new Point(point.y, point.x));
+			flippedPending.psuh({
+				x : point.y,
+				y : point.x
+			});
 		}
 
 		this.pendingPoints = flippedPending;
 		this.flipped = !this.flipped;
 	};
-	
+
 	this.scoreWordPoints = function(points) {
 		var wordMod = null;
 		var score = 0;
@@ -272,26 +294,17 @@ function Game(board, dawg) {
 		'y' : 3,
 		'z' : 10
 	};
-	
+
 	this.alphabet = [];
 	for ( var letter in this.letterValues) {
 		this.alphabet.push(letter);
 	}
-	
-	//DawgUtil.test(this, dawg);
+
+	// DawgUtil.test(this, dawg);
 
 }
 
 function Point(x, y) {
 	this.x = x;
 	this.y = y;
-}
-
-function Tile(letter, wildcard) {
-	this.letter = letter;
-	if (wildcard) {
-		this.wildcard = true;
-	} else {
-		this.wildcard = false;
-	}
 }

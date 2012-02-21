@@ -3,6 +3,7 @@ function Chooser(game, rack) {
 	this.game = game;
 	this.rack = rack;
 	this.options = [];
+	this.seenMoves = [];
 
 	this.getOptions = function() {
 		this.getAcrossOptions();
@@ -17,11 +18,26 @@ function Chooser(game, rack) {
 			var anchors = [];
 			if (!this.game.empty) {
 				for ( var x = 0; x < 15; x++) {
-					p = new Point(x, y);
-					right = new Point(x + 1, y);
-					left = new Point(x - 1, y);
-					down = new Point(x, y + 1);
-					up = new Point(x, y - 1);
+					p = {
+						x : x,
+						y : y
+					};
+					right = {
+						x : x + 1,
+						y : y
+					};
+					left = {
+						x : x - 1,
+						y : y
+					};
+					down = {
+						x : x,
+						y : y + 1
+					};
+					up = {
+						x : x,
+						y : y - 1
+					};
 					if (this.game.inBounds(right) && this.game.tileAt(right)
 							|| this.game.inBounds(down) && this.game.tileAt(down)
 							|| this.game.inBounds(left) && this.game.tileAt(left)
@@ -32,7 +48,10 @@ function Chooser(game, rack) {
 			} else {
 				if (y == 6) {
 					for ( var x = 1; x <= 7; x++) {
-						anchors.push(new Point(x, y));
+						anchors.push({
+							x : x,
+							y : y
+						});
 					}
 				}
 			}
@@ -40,23 +59,41 @@ function Chooser(game, rack) {
 			for ( var i = 0; i < anchors.length; i++) {
 				var p = anchors[i];
 				var limit = 0;
-				var left = new Point(p.x - 1, p.y);
+				var left = {
+					x : p.x - 1,
+					y : p.y
+				};
 				while (this.game.inBounds(left) && !this.game.tileAt(left)) {
 					limit++;
-					left = new Point(left.x - 1, left.y);
+					left = {
+						x : left.x - 1,
+						y : left.y
+					};
 				}
 				if (limit == 0) {
-					cur = new Point(p.x - 1, p.y);
+					cur = {
+						x : p.x - 1,
+						y : p.y
+					};
 					while (this.game.inBounds(cur) && this.game.tileAt(cur)) {
-						cur = new Point(cur.x - 1, cur.y);
+						cur = {
+							x : cur.x - 1,
+							y : cur.y
+						};
 					}
 					/* array<Tile> */var partial = [];
 					/* DawgNode */var node = this.game.dawg;
-					cur = new Point(cur.x + 1, cur.y);
+					cur = {
+						x : cur.x + 1,
+						y : cur.y
+					};
 					while (this.game.inBounds(cur) && this.game.tileAt(cur)) {
 						partial.push(this.game.tileAt(cur));
 						node = node[this.game.tileAt(cur).letter];
-						cur = new Point(cur.x + 1, cur.y);
+						cur = {
+							x : cur.x + 1,
+							y : cur.y
+						};
 					}
 					this.extendRight(partial, node, p);
 				} else {
@@ -67,7 +104,10 @@ function Chooser(game, rack) {
 	};
 
 	this.leftPart = function(/* array<Tile> */partial, /* DawgNode */node,
-			limit, anchor) {;
+			limit, anchor) {
+		console.log("LEFT PART");
+		console.log(partial);
+		console.log(anchor);
 		this.extendRight(partial, node, anchor);
 		if (limit > 0) {
 			for ( var i = 0; i < this.rack.length; i++) {
@@ -77,12 +117,15 @@ function Chooser(game, rack) {
 				if (removed.wildcard) {
 					for ( var idx in this.game.alphabet) {
 						var letter = this.game.alphabet[idx];
-						toChecks.push(new Tile(letter, true));
+						toChecks.push({
+							letter : letter,
+							wildcard : true
+						});
 					}
 				} else {
 					toChecks.push(removed);
 				}
-				
+
 				for ( var j = 0; j < toChecks.length; j++) {
 					var toCheck = toChecks[j];
 					var next = node[toCheck.letter];
@@ -99,9 +142,8 @@ function Chooser(game, rack) {
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
 			point) {
-//		console.log("EXTEND RIGHT");
-//		console.log(partial);
-//		console.log(point);
+		console.log("EXTEND RIGHT");
+		console.log(point);
 		if (node["_"]) {
 			this.recordMove(partial, point);
 		}
@@ -112,7 +154,10 @@ function Chooser(game, rack) {
 				if (removed.wildcard) {
 					for ( var idx in this.game.alphabet) {
 						var letter = this.game.alphabet[idx];
-						toChecks.push(new Tile(letter, true));
+						toChecks.push({
+							letter : letter,
+							wildcard : true
+						});
 					}
 				} else {
 					toChecks.push(removed);
@@ -122,7 +167,10 @@ function Chooser(game, rack) {
 					var next = node[toCheck.letter];
 					if (next) {
 						partial.push(toCheck);
-						right = new Point(point.x + 1, point.y);
+						right = {
+							x : point.x + 1,
+							y : point.y
+						};
 						this.extendRight(partial, next, right);
 						partial.pop();
 					}
@@ -134,7 +182,10 @@ function Chooser(game, rack) {
 			var next = node[tile.letter];
 			if (next) {
 				partial.push(tile);
-				right = new Point(point.x + 1, point.y);
+				right = {
+					x : point.x + 1,
+					y : point.y
+				};
 				this.extendRight(partial, next, right);
 				partial.pop();
 			}
@@ -143,22 +194,30 @@ function Chooser(game, rack) {
 
 	this.recordMove = function(/* array<Tile> */partial, terminal) {
 		console.log("RECORD");
-		console.log(partial);
+		for (var idx in partial) {
+			console.log(idx);
+			console.log(partial[idx]);
+		}
 		console.log(terminal);
 		var plays = [];
-		var curPoint = new Point(terminal.x - 1, terminal.y);
+		var curPoint = {
+			x : terminal.x - 1,
+			y : terminal.y
+		};
 		var i = partial.length - 1;
 
-		while (i >= 0 || this.game.inBounds(curPoint)
-				&& this.game.tileAt(curPoint)) {
-			if (this.game.inBounds(curPoint) && this.game.tileAt(curPoint)) {
+		while (i >= 0 || (this.game.inBounds(curPoint) && this.game.tileAt(curPoint))) {
+			if (this.game.inBounds(curPoint) && !this.game.tileAt(curPoint)) {
 				plays.push({
 					"point" : curPoint,
 					"tile" : partial[i]
 				});
 			}
 			i--;
-			curPoint = new Point(curPoint.x - 1, curPoint.y);
+			curPoint = {
+				x : curPoint.x - 1,
+				y : curPoint.y
+			};
 		}
 
 		var score = -1;
@@ -178,21 +237,28 @@ function Chooser(game, rack) {
 				var point = plays[i].point;
 				var tile = plays[i].tile;
 				flippedPlays.push({
-					"point" : new Point(point.y, point.x),
+					"point" : {
+						x : point.y,
+						y : point.x
+					},
 					"tile" : tile
 				});
 			}
 			plays = flippedPlays;
 		}
+		
+		var option = {
+				"plays" : plays,
+				"score" : score
+			};
+		console.log("OPTION");
+		console.dir(option);
 
-		if (score < 0 || $.inArray(seenMoves, plays)) {
-			return;
-		} else {
-			seenMoves.push(plays);
-		}
-		options.push({
-			"plays" : plays,
-			"score" : score
-		});
+//		if (score < 0 || $.inArray(this.seenMoves, plays)) {
+//			return;
+//		} else {
+//			seenMoves.push(plays);
+//		}
+		options.push(option);
 	};
 }

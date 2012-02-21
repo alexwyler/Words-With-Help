@@ -59,10 +59,6 @@ function buildLinks(words) {
 
 function loadMoves() {
 	if (config.clientDawgz) {
-		console.log("starting");
-		console.log("rack=");
-		console.log(rack);
-		console.log(rack[0]);
 		var game = new Game(board, DawgUtil.dawg);
 		var chooser = new Chooser(game, rack);
 		processResults(chooser.getOptions());
@@ -142,6 +138,7 @@ function finalizeResults() {
 	} else {
 		$("#status").html("All moves found!");
 	}
+	selectOption(0);
 }
 
 function selectOption(idx) {
@@ -149,21 +146,22 @@ function selectOption(idx) {
 	$("#currentSelection").html(buildLinks(options[idx].words));
 	$(".option").removeClass("selected");
 	$("#option" + idx).addClass("selected");
-	loadOption(options[idx]);
+	displayOption(options[idx]);
 }
 
-function loadOption(move) {
+function displayOption(move) {
 	$('#scoreContainer').show();
 	$("#points").html(move.score);
 	for ( var i in move.plays) {
-		var letter = move.plays[i].letter.toUpperCase();
+		console.log(move.plays[i]);
+		var letter = move.plays[i].tile.letter.toUpperCase();
 		if (move.plays[i].wildcard) {
-			$("tr[row=\"" + move.plays[i].y + "\"]").children(
-					"td[col=\"" + move.plays[i].x + "\"]").html(
+			$("tr[row=\"" + move.plays[i].point.y + "\"]").children(
+					"td[col=\"" + move.plays[i].point.x + "\"]").html(
 					"<div class='blank move'>" + letter + "<div/>").addClass("active");
 		} else {
-			$("tr[row=\"" + move.plays[i].y + "\"]").children(
-					"td[col=\"" + move.plays[i].x + "\"]").html(
+			$("tr[row=\"" + move.plays[i].point.y + "\"]").children(
+					"td[col=\"" + move.plays[i].point.x + "\"]").html(
 					"<div class='move'>" + letter + "<div/>").addClass("active");
 		}
 	}
