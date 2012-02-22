@@ -119,14 +119,18 @@ function Game(brd, dawg) {
   };
 
 	  this.scoreTile = function(tile) {
-		    if (tile.wildcard) {
+		  if (!tile) {
+        return 0;
+      } else if (tile.wildcard) {
 			      return 0;
 		    }
 		    return this.letterValues[tile.letter];
 	  };
 
 	  this.initSpecialSpaces = function() {
+      this.specialSpaces = new Array(15);
 		    for ( var x = 0; x < 15; x++) {
+          this.specialSpaces[x] = new Array(15);
 			      for ( var y = 0; y < 15; y++) {
 				        this.specialSpaces[x][y] = null;
 			      }
@@ -161,9 +165,11 @@ function Game(brd, dawg) {
 			      }
 		    }
 	  };
+  this.initSpecialSpaces();
 
 	  this.getCreatedWords = function() {
 		    var createdWords = [];
+      this.createdStrings =  this.createdStrings || [];
 		    for (var i = 0; i < this.pendingPoints.length; i++) {
 			      var point = this.pendingPoints[i];
 			      var horiz = [];
@@ -187,9 +193,11 @@ function Game(brd, dawg) {
 					          y : curPoint.y
 				        };
 			      }
-
-			      if (horiz.length > 1 && $.inArray(horiz, createdWords) < 0) {
+          horiz = this.orderPoints(horiz);
+          var moveStr = JSON.stringify(horiz) + this.pointsToStr(horiz);
+			      if (horiz.length > 1 && $.inArray(moveStr, this.createdStrings) < 0) {
 				        createdWords.push(horiz);
+              this.createdStrings.push(moveStr);
 			      }
 
 			      var vert = [];
@@ -212,12 +220,17 @@ function Game(brd, dawg) {
 					          y : curPoint.y + 1
 				        };
 			      }
-				        vert.push(curPoint);
 
-			      if (vert.length > 1 && $.inArray(vert, createdWords) < 0) {
-				        createdWords.push(vert);
-			      }
+          // is this right? 
+//				  vert.push(curPoint);
+          vert = this.orderPoints(vert);
+          moveStr = JSON.stringify(vert) + this.pointsToStr(vert);
+			    if (vert.length > 1 && $.inArray(moveStr, this.createdStrings) < 0) {
+				    createdWords.push(vert);
+            this.createdStrings.push(moveStr);
+			    }
 		    }
+      console.log(this.createdStrings);
 		    return createdWords;
 	  };
 
