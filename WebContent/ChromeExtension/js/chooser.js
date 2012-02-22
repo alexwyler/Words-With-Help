@@ -105,9 +105,6 @@ function Chooser(game, rack) {
 
 	this.leftPart = function(/* array<Tile> */partial, /* DawgNode */node,
 			limit, anchor) {
-		console.log("LEFT PART");
-		console.log(partial);
-		console.log(anchor);
 		this.extendRight(partial, node, anchor);
 		if (limit > 0) {
 			for ( var i = 0; i < this.rack.length; i++) {
@@ -142,8 +139,6 @@ function Chooser(game, rack) {
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
 			point) {
-		console.log("EXTEND RIGHT");
-		console.log(point);
 		if (node["_"]) {
 			this.recordMove(partial, point);
 		}
@@ -193,12 +188,6 @@ function Chooser(game, rack) {
 	};
 
 	this.recordMove = function(/* array<Tile> */partial, terminal) {
-		console.log("RECORD");
-		for (var idx in partial) {
-			console.log(idx);
-			console.log(partial[idx]);
-		}
-		console.log(terminal);
 		var plays = [];
 		var curPoint = {
 			x : terminal.x - 1,
@@ -221,13 +210,10 @@ function Chooser(game, rack) {
 		}
 
 		var score = -1;
-		console.log(plays);
 		this.game.placeTiles(plays);
 		var errors = game.getErrors();
 		if (!errors) {
 			score = game.scorePending();
-		} else {
-			console.log(errors);
 		}
 		game.discardPending();
 
@@ -246,13 +232,11 @@ function Chooser(game, rack) {
 			}
 			plays = flippedPlays;
 		}
-		
+
 		var option = {
 				"plays" : plays,
 				"score" : score
 			};
-		console.log("OPTION");
-		console.dir(option);
 
 //		if (score < 0 || $.inArray(this.seenMoves, plays)) {
 //			return;
