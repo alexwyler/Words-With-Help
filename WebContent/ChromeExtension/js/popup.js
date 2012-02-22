@@ -137,8 +137,8 @@ function finalizeResults() {
 		$("#status").html("No moves found");
 	} else {
 		$("#status").html("All moves found!");
+	  selectOption(0);
 	}
-	selectOption(0);
 }
 
 function selectOption(idx) {

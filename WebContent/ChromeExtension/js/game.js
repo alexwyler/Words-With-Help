@@ -1,9 +1,5 @@
-function Game(board, dawg) {
-	if (board) {
-		    this.board = board;
-	  } else {
-		    this.board = [];
-	  }
+function Game(brd, dawg) {
+	this.board = brd || [];
 	  this.flipped = false;
 	  // TODO: empty
 	  this.empty = false;
@@ -28,7 +24,7 @@ function Game(board, dawg) {
 	  };
 
 	  this.tileAt = function(point) {
-		    return board[point.x][point.y];
+		    return this.board[point.x][point.y];
 	  };
 
 	  this.getErrors = function() {
@@ -80,16 +76,17 @@ function Game(board, dawg) {
 
 				        if (this.createdWordStr == "") {
 					          return "Empty created word!";
-				        }
-
-				        if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
+				        } else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
 					          return "'" + this.createdWordStr + "' is not a recognized word";
-				        }
+				        } else {
+                  return false;
+                }
 			      }
 			      if (!connected) {
 				        // todo: fix
 				        //return "Play must connect with existing letters";
 			      }
+          return "This really shouldnt happen...";
 		    }
 	  };
 
@@ -99,6 +96,8 @@ function Game(board, dawg) {
       var tile = this.tileAt(points[i]);
       if (tile) {
         str += tile.letter;
+      } else {
+        console.warn("tile missing on board!");
       }
     }
     return str;
@@ -253,7 +252,7 @@ function Game(board, dawg) {
 			      }
 		    }
 
-		    board = flippedBoard;
+		  this.board = flippedBoard;
 		    var flippedPending = [];
 		    for ( var i = 0; i < this.pendingPoints.length; i++) {
 			      var point = this.pendingPoints[i];

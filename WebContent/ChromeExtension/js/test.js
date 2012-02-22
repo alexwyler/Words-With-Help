@@ -9,7 +9,7 @@ Test.getTestData = function() {
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+				[ null, null, null, null, null, {letter: 'a'}, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, {letter: 'd'}, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
