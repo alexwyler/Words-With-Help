@@ -139,7 +139,7 @@ function Chooser(game, rack) {
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
 			point) {
-		if (node["_"]) {
+		if (node["te"]) {
 			this.recordMove(partial, point);
 		}
 		if (this.game.inBounds(point) && !this.game.tileAt(point)) {

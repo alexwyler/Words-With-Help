@@ -81,7 +81,6 @@ function Game(board, dawg) {
 				        if (this.createdWordStr == "") {
 					          return "Empty created word!";
 				        }
-
 				        if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
 					          return "'" + this.createdWordStr + "' is not a recognized word";
 				        }
