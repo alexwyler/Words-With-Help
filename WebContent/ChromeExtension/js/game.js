@@ -1,5 +1,5 @@
 function Game(board, dawg) {
-	  if (board) {
+	if (board) {
 		    this.board = board;
 	  } else {
 		    this.board = [];
@@ -76,9 +76,14 @@ function Game(board, dawg) {
 					          }
 				        }
 
-				        var createdWordStr = this.pointsToStr(createdWordPoints);
-				        if (!DawgUtil.inDict(this.dawg, createdWordStr)) {
-					          return "'" + createdWordStr + "' is not a recognized word";
+				      this.createdWordStr = this.pointsToStr(createdWordPoints);
+
+				        if (this.createdWordStr == "") {
+					          return "Empty created word!";
+				        }
+
+				        if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
+					          return "'" + this.createdWordStr + "' is not a recognized word";
 				        }
 			      }
 			      if (!connected) {
@@ -87,6 +92,32 @@ function Game(board, dawg) {
 			      }
 		    }
 	  };
+
+  this.pointsToStr = function(points) {
+    var str = "";
+    for (var i in points) {
+      var tile = this.tileAt(points[i]);
+      if (tile) {
+        str += tile.letter;
+      }
+    }
+    return str;
+  };
+
+  function sortByX(a, b) {
+		return a.x - b.x;
+  }
+
+  function sortByY(a, b) {
+		return a.y - b.y;
+  }
+
+  this.orderPoints = function(points) {
+    var sortedPoints = points;
+    sortedPoints.sort(sortByX);
+    sortedPoints.sort(sortByY);
+    return sortedPoints;
+  };
 
 	  this.scoreTile = function(tile) {
 		    if (tile.wildcard) {
@@ -146,8 +177,7 @@ function Game(board, dawg) {
 					          y : curPoint.y
 				        };
 			      }
-
-			      curpoint = {
+			      curPoint = {
 				        x : point.x + 1,
 				        y : point.y
 			      };
@@ -159,14 +189,13 @@ function Game(board, dawg) {
 				        };
 			      }
 
-			      if (horiz.length > 1 && !$.inArray(horiz, createdWords)) {
+			      if (horiz.length > 1 && $.inArray(horiz, createdWords) < 0) {
 				        createdWords.push(horiz);
 			      }
 
 			      var vert = [];
 			      curPoint = point;
 			      while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-				        vert.push(curPoint);
 				        curPoint = {
 					          x : curPoint.x,
 					          y : curPoint.y - 1
@@ -184,12 +213,12 @@ function Game(board, dawg) {
 					          y : curPoint.y + 1
 				        };
 			      }
+				        vert.push(curPoint);
 
-			      if (vert.length > 1 && !$.inArray(vert, createdWords)) {
+			      if (vert.length > 1 && $.inArray(vert, createdWords) < 0) {
 				        createdWords.push(vert);
 			      }
 		    }
-
 		    return createdWords;
 	  };
 
@@ -228,7 +257,7 @@ function Game(board, dawg) {
 		    var flippedPending = [];
 		    for ( var i = 0; i < this.pendingPoints.length; i++) {
 			      var point = this.pendingPoints[i];
-			      flippedPending.psuh({
+			      flippedPending.push({
 				        x : point.y,
 				        y : point.x
 			      });
@@ -245,7 +274,7 @@ function Game(board, dawg) {
 			      var point = points[i];
 			      var mod = this.specialSpaces[point.x][point.y];
 			      var letterScore = this.scoreTile(this.board[point.x][point.y]);
-			      if ($.inArray(this.pendingPoints)) {
+			      if ($.inArray(this.pendingPoints) >= 0) {
 				        if (mod == "DL") {
 					          letterScore *= 2;
 				        } else if (mod == "TL") {

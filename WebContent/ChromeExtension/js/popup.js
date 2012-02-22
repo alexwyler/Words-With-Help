@@ -153,7 +153,6 @@ function displayOption(move) {
 	$('#scoreContainer').show();
 	$("#points").html(move.score);
 	for ( var i in move.plays) {
-		console.log(move.plays[i]);
 		var letter = move.plays[i].tile.letter.toUpperCase();
 		if (move.plays[i].wildcard) {
 			$("tr[row=\"" + move.plays[i].point.y + "\"]").children(

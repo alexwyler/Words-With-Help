@@ -210,11 +210,17 @@ function Chooser(game, rack) {
 		}
 
 		var score = -1;
+    var words = "";
 		this.game.placeTiles(plays);
 		var errors = game.getErrors();
-		if (!errors) {
-			score = game.scorePending();
-		}
+		if (errors) {
+		  game.discardPending();
+      console.log(errors);
+      return;
+    }
+
+		score = game.scorePending();
+    words = game.createdWordStr;
 		game.discardPending();
 
 		if (this.game.flipped) {
@@ -235,7 +241,8 @@ function Chooser(game, rack) {
 
 		var option = {
 				"plays" : plays,
-				"score" : score
+				"score" : score,
+        "words" : words
 			};
 
 //		if (score < 0 || $.inArray(this.seenMoves, plays)) {
