@@ -221,7 +221,7 @@ function Game(brd, dawg) {
 				        };
 			      }
 
-          // is this right? 
+          // is this right?
 //				  vert.push(curPoint);
           vert = this.orderPoints(vert);
           moveStr = JSON.stringify(vert) + this.pointsToStr(vert);

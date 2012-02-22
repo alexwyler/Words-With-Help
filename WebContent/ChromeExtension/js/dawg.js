@@ -1,17 +1,16 @@
 DawgUtil = {};
 
 DawgUtil.inDict = function(dawg, wordStr) {
-
-	var nextDawg = null;
+  var nextDawg = dawg;
 	for ( var i = 0; i < wordStr.length; i++) {
 		var letter = wordStr.charAt(i);
-		nextDawg = dawg[letter];
+    nextDawg = nextDawg[letter];
 		if (!nextDawg) {
 			break;
 		}
 	}
 
-	if (nextDawg && nextDawg["_"]) {
+	if (nextDawg && nextDawg["te"]) {
 		return true;
 	}
 };
