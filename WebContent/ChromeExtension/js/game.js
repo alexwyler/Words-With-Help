@@ -100,10 +100,16 @@ function Game(brd, dawg) {
   };
 
   function sortByX(a, b) {
-		return a.x - b.x;
+		if (a.point) {
+      return a.point.x - b.point.x;
+    }
+    return a.x - b.x;
   }
 
   function sortByY(a, b) {
+    if (a.point) {
+      return a.point.y - b.point.y;
+    }
 		return a.y - b.y;
   }
 

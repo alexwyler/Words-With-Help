@@ -2,15 +2,15 @@ function Chooser(game, rack) {
 
 	this.game = game;
 	this.rack = rack;
-	this.options = [];
-	this.seenMoves = [];
 
 	this.getOptions = function() {
+    this.options = [];
+    this.seenMoves = [];
 		this.getAcrossOptions();
 		this.game.flip();
 		this.getAcrossOptions();
 		this.game.flip();
-		return options;
+		return this.options;
 	};
 
 	this.getAcrossOptions = function() {
@@ -49,9 +49,9 @@ function Chooser(game, rack) {
 				if (y == 6) {
 					for ( var x = 1; x <= 7; x++) {
 						anchors.push({
-							x : x,
-							y : y
-						});
+							             x : x,
+							             y : y
+						             });
 					}
 				}
 			}
@@ -104,7 +104,7 @@ function Chooser(game, rack) {
 	};
 
 	this.leftPart = function(/* array<Tile> */partial, /* DawgNode */node,
-			limit, anchor) {
+		limit, anchor) {
 		this.extendRight(partial, node, anchor);
 		if (limit > 0) {
 			for ( var i = 0; i < this.rack.length; i++) {
@@ -115,9 +115,9 @@ function Chooser(game, rack) {
 					for ( var idx in this.game.alphabet) {
 						var letter = this.game.alphabet[idx];
 						toChecks.push({
-							letter : letter,
-							wildcard : true
-						});
+							              letter : letter,
+							              wildcard : true
+						              });
 					}
 				} else {
 					toChecks.push(removed);
@@ -138,7 +138,7 @@ function Chooser(game, rack) {
 	};
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
-			point) {
+		point) {
 		if (node["te"]) {
 			this.recordMove(partial, point);
 		}
@@ -150,9 +150,9 @@ function Chooser(game, rack) {
 					for ( var idx in this.game.alphabet) {
 						var letter = this.game.alphabet[idx];
 						toChecks.push({
-							letter : letter,
-							wildcard : true
-						});
+							              letter : letter,
+							              wildcard : true
+						              });
 					}
 				} else {
 					toChecks.push(removed);
@@ -198,9 +198,9 @@ function Chooser(game, rack) {
 		while (i >= 0 || (this.game.inBounds(curPoint) && this.game.tileAt(curPoint))) {
 			if (this.game.inBounds(curPoint) && !this.game.tileAt(curPoint)) {
 				plays.push({
-					"point" : curPoint,
-					"tile" : partial[i]
-				});
+					           "point" : curPoint,
+					           "tile" : partial[i]
+				           });
 			}
 			i--;
 			curPoint = {
@@ -228,28 +228,28 @@ function Chooser(game, rack) {
 				var point = plays[i].point;
 				var tile = plays[i].tile;
 				flippedPlays.push({
-					"point" : {
-						x : point.y,
-						y : point.x
-					},
-					"tile" : tile
-				});
+					                  "point" : {
+						                  x : point.y,
+						                  y : point.x
+					                  },
+					                  "tile" : tile
+				                  });
 			}
 			plays = flippedPlays;
 		}
 
 		var option = {
-				"plays" : plays,
-				"score" : score,
-        "words" : words
-			};
+			"plays" : plays,
+			"score" : score,
+      "words" : words
+		};
 
-      var str = JSON.stringify(option);
-      if (this.seenMoves.indexOf(str) > 0) {
-          return;
-      } else {
-          this.seenMoves.push(str);
-      }
+    var str = JSON.stringify(game.orderPoints(plays));
+    if (this.seenMoves.indexOf(str) >= 0) {
+      return;
+    } else {
 		  options.push(option);
+      this.seenMoves.push(str);
+    }
 	};
 }
