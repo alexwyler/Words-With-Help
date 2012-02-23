@@ -214,14 +214,13 @@ function Chooser(game, rack) {
 		this.game.placeTiles(plays);
 		var errors = game.getErrors();
 		if (errors) {
+        console.log(errors);
 		  game.discardPending();
-      console.log(errors);
       return;
     }
 
 		score = game.scorePending();
     words = game.createdWordStr;
-        console.log(game.createdWordStr, game.getErrors());
 		game.discardPending();
 
 		if (this.game.flipped) {
