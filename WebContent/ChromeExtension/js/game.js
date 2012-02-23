@@ -1,94 +1,94 @@
 function Game(brd, dawg) {
 	this.board = brd || [];
-	  this.flipped = false;
-	  // TODO: empty
-	  this.empty = false;
-	  this.pendingPoints = [];
-	  this.specialSpaces = [];
-	  this.dawg = dawg;
+	this.flipped = false;
+	// TODO: empty
+	this.empty = false;
+	this.pendingPoints = [];
+	this.specialSpaces = [];
+	this.dawg = dawg;
 
-	  this.inBounds = function(point) {
-		    return point.x >= 0 && point.x < 15 && point.y >= 0 && point.y < 15;
-	  };
+	this.inBounds = function(point) {
+		return point.x >= 0 && point.x < 15 && point.y >= 0 && point.y < 15;
+	};
 
-	  this.placeTile = function(point, tile) {
-		    this.board[point.x][point.y] = tile;
-		    this.pendingPoints.push(point);
-	  };
+	this.placeTile = function(point, tile) {
+		this.board[point.x][point.y] = tile;
+		this.pendingPoints.push(point);
+	};
 
-	  this.placeTiles = function(plays) {
-		    for ( var i = 0; i < plays.length; i++) {
-			      var play = plays[i];
-			      this.placeTile(play.point, play.tile);
-		    }
-	  };
+	this.placeTiles = function(plays) {
+		for ( var i = 0; i < plays.length; i++) {
+			var play = plays[i];
+			this.placeTile(play.point, play.tile);
+		}
+	};
 
-	  this.tileAt = function(point) {
-		    return this.board[point.x][point.y];
-	  };
+	this.tileAt = function(point) {
+		return this.board[point.x][point.y];
+	};
 
-	  this.getErrors = function() {
-		    if (this.pendingPoints.length == 0) {
-			      return "Must play tiles";
-		    }
+	this.getErrors = function() {
+		if (this.pendingPoints.length == 0) {
+			return "Must play tiles";
+		}
 
-		    var x = this.pendingPoints[0].x;
-		    var y = this.pendingPoints[0].y;
-		    var horiz = true;
-		    var vert = true;
+		var x = this.pendingPoints[0].x;
+		var y = this.pendingPoints[0].y;
+		var horiz = true;
+		var vert = true;
 
-		    for ( var i = 0; i < this.pendingPoints.length; i++) {
-			      var pendingPoint = this.pendingPoints[i];
+		for ( var i = 0; i < this.pendingPoints.length; i++) {
+			var pendingPoint = this.pendingPoints[i];
 
-			      if (pendingPoint.x != x) {
-				        horiz = false;
-			      }
+			if (pendingPoint.x != x) {
+				horiz = false;
+			}
 
-			      if (pendingPoint.y != y) {
-				        vert = false;
-			      }
-		    }
-		    if (!horiz && !vert) {
-			      return "Must play all tiles in a row";
-		    }
+			if (pendingPoint.y != y) {
+				vert = false;
+			}
+		}
+		if (!horiz && !vert) {
+			return "Must play all tiles in a row";
+		}
 
-		    var createdWords = this.getCreatedWords();
+		var createdWords = this.getCreatedWords();
 
-		    if (this.empty) {
-			      center = {
-				        x : Math.floor(this.board.length / 2),
-				        y : Math.floor(this.board[0].length / 2)
-			      };
-			      if (!$.arrayContains(createdWords[0], center)) {
-				        return "Must play across center tile on first turn";
-			      }
-		    } else {
-			      var connected = false;
-			      for ( var i = 0; i < createdWords.length; i++) {
-				        var createdWordPoints = this.orderPoints(createdWords[i]);
-				        for ( var j = 0; j < createdWordPoints.length; j++) {
-					          if ($.inArray(this.pendingPoints, createdWordPoints[j])) {
-						            connected = true;
-					          }
-				        }
+		if (this.empty) {
+			center = {
+				x : Math.floor(this.board.length / 2),
+				y : Math.floor(this.board[0].length / 2)
+			};
+			if (!$.arrayContains(createdWords[0], center)) {
+				return "Must play across center tile on first turn";
+			}
+		} else {
+			var connected = false;
+			for ( var i = 0; i < createdWords.length; i++) {
+				var createdWordPoints = this.orderPoints(createdWords[i]);
+				for ( var j = 0; j < createdWordPoints.length; j++) {
+					if ($.inArray(this.pendingPoints, createdWordPoints[j])) {
+						connected = true;
+					}
+				}
 
-				      this.createdWordStr = this.pointsToStr(createdWordPoints);
+				this.createdWordStr = this.pointsToStr(createdWordPoints);
 
-				        if (this.createdWordStr == "") {
-					          return "Empty created word!";
-				        } else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
-					          return "'" + this.createdWordStr + "' is not a recognized word";
-				        } else {
-                  return false;
-                }
-			      }
-			      if (!connected) {
-				        // todo: fix
-				        //return "Play must connect with existing letters";
-			      }
-          return "This really shouldnt happen...";
-		    }
-	  };
+				if (this.createdWordStr == "") {
+					return "Empty created word!";
+				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
+					return "'" + this.createdWordStr + "' is not a recognized word";
+				} else {
+          return false;
+        }
+			}
+			if (!connected) {
+				// todo: fix
+				//return "Play must connect with existing letters";
+			}
+      return "This really shouldnt happen...";
+		}
+	};
 
   this.pointsToStr = function(points) {
     var str = "";
@@ -340,10 +340,9 @@ function Game(brd, dawg) {
 	  }
 
 	  // DawgUtil.test(this, dawg);
-
 }
 
 function Point(x, y) {
-	  this.x = x;
-	  this.y = y;
+	this.x = x;
+	this.y = y;
 }
