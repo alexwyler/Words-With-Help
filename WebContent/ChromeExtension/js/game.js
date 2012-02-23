@@ -64,6 +64,7 @@ function Game(brd, dawg) {
 			}
 		} else {
 			var connected = false;
+      this.createdWordStr = [];
 			for ( var i = 0; i < createdWords.length; i++) {
 				var createdWordPoints = this.orderPoints(createdWords[i]);
 				for ( var j = 0; j < createdWordPoints.length; j++) {
@@ -71,11 +72,11 @@ function Game(brd, dawg) {
 						connected = true;
 					}
 				}
+				this.createdWordStr[i] = this.pointsToStr(createdWordPoints);
 
-				this.createdWordStr = this.pointsToStr(createdWordPoints);
 				if (this.createdWordStr == "") {
 					return "Empty created word!";
-				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
+				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr[i])) {
 					return "'" + this.createdWordStr + "' is not a recognized word";
 				}
 			}
