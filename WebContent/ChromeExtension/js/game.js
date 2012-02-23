@@ -118,228 +118,226 @@ function Game(brd, dawg) {
     return sortedPoints;
   };
 
-	  this.scoreTile = function(tile) {
-		  if (!tile) {
-        return 0;
-      } else if (tile.wildcard) {
-			      return 0;
-		    }
-		    return this.letterValues[tile.letter];
-	  };
+	this.scoreTile = function(tile) {
+		if (!tile) {
+      return 0;
+    } else if (tile.wildcard) {
+			return 0;
+		}
+		return this.letterValues[tile.letter];
+	};
 
-	  this.initSpecialSpaces = function() {
-      this.specialSpaces = new Array(15);
-		    for ( var x = 0; x < 15; x++) {
-          this.specialSpaces[x] = new Array(15);
-			      for ( var y = 0; y < 15; y++) {
-				        this.specialSpaces[x][y] = null;
-			      }
-		    }
+	this.initSpecialSpaces = function() {
+    this.specialSpaces = new Array(15);
+		for ( var x = 0; x < 15; x++) {
+      this.specialSpaces[x] = new Array(15);
+			for ( var y = 0; y < 15; y++) {
+				this.specialSpaces[x][y] = null;
+			}
+		}
 
-		    this.specialSpaces[3][0] = "TW";
-		    this.specialSpaces[6][0] = "TL";
-		    this.specialSpaces[2][1] = "DL";
-		    this.specialSpaces[5][1] = "DW";
-		    this.specialSpaces[1][2] = "DL";
-		    this.specialSpaces[4][2] = "DL";
-		    this.specialSpaces[0][3] = "TW";
-		    this.specialSpaces[3][3] = "TL";
-		    this.specialSpaces[6][0] = "TL";
-		    this.specialSpaces[2][4] = "DL";
-		    this.specialSpaces[6][4] = "DL";
-		    this.specialSpaces[1][5] = "DW";
-		    this.specialSpaces[5][5] = "TL";
-		    this.specialSpaces[0][6] = "TL";
-		    this.specialSpaces[4][6] = "DL";
-		    this.specialSpaces[7][3] = "DW";
-		    this.specialSpaces[3][7] = "DW";
-		    this.specialSpaces[11][7] = "DW";
-		    this.specialSpaces[7][11] = "DW";
+		this.specialSpaces[3][0] = "TW";
+		this.specialSpaces[6][0] = "TL";
+		this.specialSpaces[2][1] = "DL";
+		this.specialSpaces[5][1] = "DW";
+		this.specialSpaces[1][2] = "DL";
+		this.specialSpaces[4][2] = "DL";
+		this.specialSpaces[0][3] = "TW";
+		this.specialSpaces[3][3] = "TL";
+		this.specialSpaces[6][0] = "TL";
+		this.specialSpaces[2][4] = "DL";
+		this.specialSpaces[6][4] = "DL";
+		this.specialSpaces[1][5] = "DW";
+		this.specialSpaces[5][5] = "TL";
+		this.specialSpaces[0][6] = "TL";
+		this.specialSpaces[4][6] = "DL";
+		this.specialSpaces[7][3] = "DW";
+		this.specialSpaces[3][7] = "DW";
+		this.specialSpaces[11][7] = "DW";
+		this.specialSpaces[7][11] = "DW";
 
-		    for ( var x = 0; x < Math.floor(this.specialSpaces.length / 2); x++) {
-			      var ylength = this.specialSpaces[x].length;
-			      for ( var y = 0; y < Math.floor(this.specialSpaces[x].length / 2); y++) {
-				        this.specialSpaces[this.specialSpaces.length - x - 1][y] = this.specialSpaces[x][y];
-				        this.specialSpaces[this.specialSpaces.length - x - 1][ylength - y - 1] = this.specialSpaces[x][y];
-				        this.specialSpaces[x][ylength - y - 1] = this.specialSpaces[x][y];
-			      }
-		    }
-	  };
+		for ( var x = 0; x < Math.floor(this.specialSpaces.length / 2); x++) {
+			var ylength = this.specialSpaces[x].length;
+			for ( var y = 0; y < Math.floor(this.specialSpaces[x].length / 2); y++) {
+				this.specialSpaces[this.specialSpaces.length - x - 1][y] = this.specialSpaces[x][y];
+				this.specialSpaces[this.specialSpaces.length - x - 1][ylength - y - 1] = this.specialSpaces[x][y];
+				this.specialSpaces[x][ylength - y - 1] = this.specialSpaces[x][y];
+			}
+		}
+	};
   this.initSpecialSpaces();
 
-	  this.getCreatedWords = function() {
-		    var createdWords = [];
-      this.createdStrings =  this.createdStrings || [];
-		    for (var i = 0; i < this.pendingPoints.length; i++) {
-			      var point = this.pendingPoints[i];
-			      var horiz = [];
+	this.getCreatedWords = function() {
+		var createdWords = [];
+    var createdStrings =  [];
+		for (var i = 0; i < this.pendingPoints.length; i++) {
+			var point = this.pendingPoints[i];
+			var horiz = [];
 
-			      var curPoint = point;
-			      while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-				        horiz.push(curPoint);
-				        curPoint = {
-					          x : curPoint.x - 1,
-					          y : curPoint.y
-				        };
-			      }
-			      curPoint = {
-				        x : point.x + 1,
-				        y : point.y
-			      };
-			      while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-				        horiz.push(curPoint);
-				        curPoint = {
-					          x : curPoint.x + 1,
-					          y : curPoint.y
-				        };
-			      }
-          horiz = this.orderPoints(horiz);
-          var moveStr = JSON.stringify(horiz) + this.pointsToStr(horiz);
-			      if (horiz.length > 1 && $.inArray(moveStr, this.createdStrings) < 0) {
-				        createdWords.push(horiz);
-              this.createdStrings.push(moveStr);
-			      }
+			var curPoint = point;
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				horiz.push(curPoint);
+				curPoint = {
+					x : curPoint.x - 1,
+					y : curPoint.y
+				};
+			}
+			curPoint = {
+				x : point.x + 1,
+				y : point.y
+			};
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				horiz.push(curPoint);
+				curPoint = {
+					x : curPoint.x + 1,
+					y : curPoint.y
+				};
+			}
+      horiz = this.orderPoints(horiz);
+      var moveStr = JSON.stringify(horiz) + this.pointsToStr(horiz);
+			if (horiz.length > 1 && $.inArray(moveStr, createdStrings) < 0) {
+				createdWords.push(horiz);
+        createdStrings.push(moveStr);
+			}
 
-			      var vert = [];
-			      curPoint = point;
-			      while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-				        curPoint = {
-					          x : curPoint.x,
-					          y : curPoint.y - 1
-				        };
-			      }
+			var vert = [];
+			curPoint = point;
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+        vert.push(curPoint);				  
+        curPoint = {
+					x : curPoint.x,
+					y : curPoint.y - 1
+				};
+			}
 
-			      curPoint = {
-				        x : point.x,
-				        y : point.y + 1
-			      };
-			      while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-				        vert.push(curPoint);
-				        curPoint = {
-					          x : curPoint.x,
-					          y : curPoint.y + 1
-				        };
-			      }
+			curPoint = {
+				x : point.x,
+				y : point.y + 1
+			};
+			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
+				vert.push(curPoint);
+				curPoint = {
+					x : curPoint.x,
+					y : curPoint.y + 1
+				};
+			}
 
-          // is this right?
-//				  vert.push(curPoint);
-          vert = this.orderPoints(vert);
-          moveStr = JSON.stringify(vert) + this.pointsToStr(vert);
-			    if (vert.length > 1 && $.inArray(moveStr, this.createdStrings) < 0) {
-				    createdWords.push(vert);
-            this.createdStrings.push(moveStr);
-			    }
-		    }
-      console.log(this.createdStrings);
-		    return createdWords;
-	  };
+      vert = this.orderPoints(vert);
+      moveStr = JSON.stringify(vert) + this.pointsToStr(vert);
+			if (vert.length > 1 && $.inArray(moveStr, createdStrings) < 0) {
+				createdWords.push(vert);
+        createdStrings.push(moveStr);
+			}
+		}
+		return createdWords;
+	};
 
-	  this.discardPending = function() {
-		    for ( var i = 0; i < this.pendingPoints.length; i++) {
-			      var point = this.pendingPoints[i];
-			      this.board[point.x][point.y] = null;
-		    }
-		    this.pendingPoints = [];
-	  };
+	this.discardPending = function() {
+		for ( var i = 0; i < this.pendingPoints.length; i++) {
+			var point = this.pendingPoints[i];
+			this.board[point.x][point.y] = null;
+		}
+		this.pendingPoints = [];
+	};
 
-	  this.scorePending = function() {
-		    var createdWords = this.getCreatedWords();
-		    var score = 0;
-		    for ( var i = 0; i < createdWords.length; i++) {
-			      score += this.scoreWordPoints(createdWords[i]);
-		    }
-		    if (this.pendingPoints.length >= 7) {
-			      score += 35;
-		    }
-		    return score;
-	  };
+	this.scorePending = function() {
+		var createdWords = this.getCreatedWords();
+		var score = 0;
+		for ( var i = 0; i < createdWords.length; i++) {
+			score += this.scoreWordPoints(createdWords[i]);
+		}
+		if (this.pendingPoints.length >= 7) {
+			score += 35;
+		}
+		return score;
+	};
 
-	  this.flip = function() {
-		    var flippedBoard = new Array(15);
-		    ;
-		    for ( var x = 0; x < board.length; x++) {
-			      flippedBoard[x] = new Array(15);
-			      for ( var y = 0; y < board[x].length; y++) {
-				        var tile = this.board[y][x];
-				        flippedBoard[x][y] = tile;
-			      }
-		    }
+	this.flip = function() {
+		var flippedBoard = new Array(15);
+		;
+		for ( var x = 0; x < board.length; x++) {
+			flippedBoard[x] = new Array(15);
+			for ( var y = 0; y < board[x].length; y++) {
+				var tile = this.board[y][x];
+				flippedBoard[x][y] = tile;
+			}
+		}
 
-		  this.board = flippedBoard;
-		    var flippedPending = [];
-		    for ( var i = 0; i < this.pendingPoints.length; i++) {
-			      var point = this.pendingPoints[i];
-			      flippedPending.push({
-				        x : point.y,
-				        y : point.x
-			      });
-		    }
+		this.board = flippedBoard;
+		var flippedPending = [];
+		for ( var i = 0; i < this.pendingPoints.length; i++) {
+			var point = this.pendingPoints[i];
+			flippedPending.push({
+				                    x : point.y,
+				                    y : point.x
+			                    });
+		}
 
-		    this.pendingPoints = flippedPending;
-		    this.flipped = !this.flipped;
-	  };
+		this.pendingPoints = flippedPending;
+		this.flipped = !this.flipped;
+	};
 
-	  this.scoreWordPoints = function(points) {
-		    var wordMod = null;
-		    var score = 0;
-		    for ( var i = 0; i < points.length; i++) {
-			      var point = points[i];
-			      var mod = this.specialSpaces[point.x][point.y];
-			      var letterScore = this.scoreTile(this.board[point.x][point.y]);
-			      if ($.inArray(this.pendingPoints) >= 0) {
-				        if (mod == "DL") {
-					          letterScore *= 2;
-				        } else if (mod == "TL") {
-					          letterScore *= 3;
-				        } else if (mod) {
-					          wordMod = mod;
-				        }
-			      }
-			      score += letterScore;
-		    }
-		    if (wordMod == "DW") {
-			      score *= 2;
-		    } else if (wordMod == "TW") {
-			      score *= 3;
-		    }
-		    return score;
-	  },
+	this.scoreWordPoints = function(points) {
+		var wordMod = null;
+		var score = 0;
+		for ( var i = 0; i < points.length; i++) {
+			var point = points[i];
+			var mod = this.specialSpaces[point.x][point.y];
+			var letterScore = this.scoreTile(this.board[point.x][point.y]);
+			if ($.inArray(this.pendingPoints) >= 0) {
+				if (mod == "DL") {
+					letterScore *= 2;
+				} else if (mod == "TL") {
+					letterScore *= 3;
+				} else if (mod) {
+					wordMod = mod;
+				}
+			}
+			score += letterScore;
+		}
+		if (wordMod == "DW") {
+			score *= 2;
+		} else if (wordMod == "TW") {
+			score *= 3;
+		}
+		return score;
+	},
 
-	  this.letterValues = {
-		    'a' : 1,
-		    'b' : 4,
-		    'c' : 4,
-		    'd' : 2,
-		    'e' : 1,
-		    'f' : 4,
-		    'g' : 3,
-		    'h' : 3,
-		    'i' : 1,
-		    'j' : 10,
-		    'k' : 5,
-		    'l' : 2,
-		    'm' : 4,
-		    'n' : 2,
-		    'o' : 1,
-		    'p' : 4,
-		    'q' : 10,
-		    'r' : 1,
-		    's' : 1,
-		    't' : 1,
-		    'u' : 2,
-		    'v' : 5,
-		    'w' : 4,
-		    'x' : 8,
-		    'y' : 3,
-		    'z' : 10
-	  };
+	this.letterValues = {
+		'a' : 1,
+		'b' : 4,
+		'c' : 4,
+		'd' : 2,
+		'e' : 1,
+		'f' : 4,
+		'g' : 3,
+		'h' : 3,
+		'i' : 1,
+		'j' : 10,
+		'k' : 5,
+		'l' : 2,
+		'm' : 4,
+		'n' : 2,
+		'o' : 1,
+		'p' : 4,
+		'q' : 10,
+		'r' : 1,
+		's' : 1,
+		't' : 1,
+		'u' : 2,
+		'v' : 5,
+		'w' : 4,
+		'x' : 8,
+		'y' : 3,
+		'z' : 10
+	};
 
-	  this.alphabet = [];
-	  for ( var letter in this.letterValues) {
-		    this.alphabet.push(letter);
-	  }
+	this.alphabet = [];
+	for ( var letter in this.letterValues) {
+		this.alphabet.push(letter);
+	}
 
-	  // DawgUtil.test(this, dawg);
+	// DawgUtil.test(this, dawg);
 }
 
 function Point(x, y) {
