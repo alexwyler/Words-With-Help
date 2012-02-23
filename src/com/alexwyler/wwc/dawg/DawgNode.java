@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -36,7 +37,7 @@ public class DawgNode {
 		for (Character c : node.edges.keySet()) {
 			json.put("" + c, convertToJSON(node.getChild(c)));
 			if (node.terminal) {
-				json.put("_", 1);
+				json.put("te", 1);
 			}
 		}
 		return json;
