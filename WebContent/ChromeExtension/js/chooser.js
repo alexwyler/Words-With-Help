@@ -142,50 +142,52 @@ function Chooser(game, rack) {
 		if (node["te"]) {
 			this.recordMove(partial, point);
 		}
-		if (this.game.inBounds(point) && !this.game.tileAt(point)) {
-			for ( var i = 0; i < this.rack.length; i++) {
-				/* Tile */var removed = this.rack.splice(i, 1)[0];
-				/* array<Tile> */var toChecks = [];
-				if (removed.wildcard) {
-					for ( var idx in this.game.alphabet) {
-						var letter = this.game.alphabet[idx];
-						toChecks.push({
-							              letter : letter,
-							              wildcard : true
-						              });
-					}
-				} else {
-					toChecks.push(removed);
-				}
-				for ( var j = 0; j < toChecks.length; j++) {
-					var toCheck = toChecks[j];
-					var next = node[toCheck.letter];
-					if (next) {
-						partial.push(toCheck);
-						right = {
-							x : point.x + 1,
-							y : point.y
-						};
-						this.extendRight(partial, next, right);
-						partial.pop();
-					}
-				}
-				this.rack.splice(i, 0, removed);
-			}
-		} else {
-			var tile = this.game.tileAt(point);
-			var next = node[tile.letter];
-			if (next) {
-				partial.push(tile);
-				right = {
-					x : point.x + 1,
-					y : point.y
-				};
-				this.extendRight(partial, next, right);
-				partial.pop();
-			}
-		}
-	};
+		if (this.game.inBounds(point)) {
+      if (!this.game.tileAt(point)) {
+			  for ( var i = 0; i < this.rack.length; i++) {
+				  /* Tile */var removed = this.rack.splice(i, 1)[0];
+				  /* array<Tile> */var toChecks = [];
+				  if (removed.wildcard) {
+					  for ( var idx in this.game.alphabet) {
+						  var letter = this.game.alphabet[idx];
+						  toChecks.push({
+							                letter : letter,
+							                wildcard : true
+						                });
+					  }
+				  } else {
+					  toChecks.push(removed);
+				  }
+				  for ( var j = 0; j < toChecks.length; j++) {
+					  var toCheck = toChecks[j];
+					  var next = node[toCheck.letter];
+					  if (next) {
+						  partial.push(toCheck);
+						  right = {
+							  x : point.x + 1,
+							  y : point.y
+						  };
+						  this.extendRight(partial, next, right);
+						  partial.pop();
+					  }
+				  }
+				  this.rack.splice(i, 0, removed);
+			  }
+		  } else {
+			  var tile = this.game.tileAt(point);
+			  var next = node[tile.letter];
+			  if (next) {
+				  partial.push(tile);
+				  right = {
+					  x : point.x + 1,
+					  y : point.y
+				  };
+				  this.extendRight(partial, next, right);
+				  partial.pop();
+			  }
+		  }
+    }
+  };
 
 	this.recordMove = function(/* array<Tile> */partial, terminal) {
 		var plays = [];

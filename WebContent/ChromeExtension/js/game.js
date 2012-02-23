@@ -24,7 +24,7 @@ function Game(brd, dawg) {
 	};
 
 	this.tileAt = function(point) {
-		return this.board[point.x][point.y];
+    return this.board[point.x][point.y];
 	};
 
 	this.getErrors = function() {
