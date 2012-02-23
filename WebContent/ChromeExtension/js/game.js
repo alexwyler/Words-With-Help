@@ -67,26 +67,22 @@ function Game(brd, dawg) {
 			for ( var i = 0; i < createdWords.length; i++) {
 				var createdWordPoints = this.orderPoints(createdWords[i]);
 				for ( var j = 0; j < createdWordPoints.length; j++) {
-					if ($.inArray(this.pendingPoints, createdWordPoints[j])) {
+					if ($.inArray(this.pendingPoints, createdWordPoints[j]) < 0) {
 						connected = true;
 					}
 				}
 
 				this.createdWordStr = this.pointsToStr(createdWordPoints);
-
+          console.log(this.createdWordStr);
 				if (this.createdWordStr == "") {
 					return "Empty created word!";
 				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
 					return "'" + this.createdWordStr + "' is not a recognized word";
-				} else {
-          return false;
-        }
+				}
 			}
 			if (!connected) {
-				// todo: fix
-				//return "Play must connect with existing letters";
+				return "Play must connect with existing letters";
 			}
-      return "This really shouldnt happen...";
 		}
 	};
 
@@ -203,7 +199,7 @@ function Game(brd, dawg) {
 			var vert = [];
 			curPoint = point;
 			while (this.inBounds(curPoint) && this.board[curPoint.x][curPoint.y]) {
-        vert.push(curPoint);				  
+        vert.push(curPoint);
         curPoint = {
 					x : curPoint.x,
 					y : curPoint.y - 1

@@ -214,7 +214,6 @@ function Chooser(game, rack) {
 		this.game.placeTiles(plays);
 		var errors = game.getErrors();
 		if (errors) {
-        console.log(errors);
 		  game.discardPending();
       return;
     }
