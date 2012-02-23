@@ -73,7 +73,6 @@ function Game(brd, dawg) {
 				}
 
 				this.createdWordStr = this.pointsToStr(createdWordPoints);
-          console.log(this.createdWordStr);
 				if (this.createdWordStr == "") {
 					return "Empty created word!";
 				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr)) {
@@ -274,7 +273,7 @@ function Game(brd, dawg) {
 	};
 
 	this.scoreWordPoints = function(points) {
-		var wordMod = null;
+		var wordMods = [];
 		var score = 0;
 		for ( var i = 0; i < points.length; i++) {
 			var point = points[i];
@@ -286,16 +285,20 @@ function Game(brd, dawg) {
 				} else if (mod == "TL") {
 					letterScore *= 3;
 				} else if (mod) {
-					wordMod = mod;
+					  wordMods.push(mod);
 				}
 			}
 			score += letterScore;
 		}
-		if (wordMod == "DW") {
-			score *= 2;
-		} else if (wordMod == "TW") {
-			score *= 3;
-		}
+
+    for (var idx in wordMods) {
+      wordMod = wordMods[idx];
+		  if (wordMod == "DW") {
+			  score *= 2;
+		  } else if (wordMod == "TW") {
+			  score *= 3;
+		  }
+    }
 		return score;
 	},
 
