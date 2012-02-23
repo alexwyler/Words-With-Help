@@ -68,7 +68,7 @@ function Game(brd, dawg) {
 			for ( var i = 0; i < createdWords.length; i++) {
 				var createdWordPoints = this.orderPoints(createdWords[i]);
 				for ( var j = 0; j < createdWordPoints.length; j++) {
-					if ($.inArray(this.pendingPoints, createdWordPoints[j]) < 0) {
+					if (!this.pointIsPending(createdWordPoints[j])) {
 						connected = true;
 					}
 				}
@@ -85,6 +85,16 @@ function Game(brd, dawg) {
 			}
 		}
 	};
+
+  this.pointIsPending = function(point) {
+    var str = JSON.stringify(point);
+    for ( var i = 0; i < this.pendingPoints.length; i++) {
+      if (str == JSON.stringify(this.pendingPoints[i])) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   this.pointsToStr = function(points) {
     var str = "";
@@ -160,7 +170,7 @@ function Game(brd, dawg) {
 
 		for ( var x = 0; x < Math.floor(this.specialSpaces.length / 2); x++) {
 			var ylength = this.specialSpaces[x].length;
-			for ( var y = 0; y < Math.floor(this.specialSpaces[x].length / 2); y++) {
+			for ( var y = 0; y < Math.floor(ylength / 2); y++) {
 				this.specialSpaces[this.specialSpaces.length - x - 1][y] = this.specialSpaces[x][y];
 				this.specialSpaces[this.specialSpaces.length - x - 1][ylength - y - 1] = this.specialSpaces[x][y];
 				this.specialSpaces[x][ylength - y - 1] = this.specialSpaces[x][y];
@@ -286,7 +296,7 @@ function Game(brd, dawg) {
 			var point = points[i];
 			var mod = this.specialSpaces[point.x][point.y];
 			var letterScore = this.scoreTile(this.board[point.x][point.y]);
-			if ($.inArray(this.pendingPoints) >= 0) {
+			if ($.inArray(point, this.pendingPoints) >= 0) {
 				if (mod == "DL") {
 					letterScore *= 2;
 				} else if (mod == "TL") {
