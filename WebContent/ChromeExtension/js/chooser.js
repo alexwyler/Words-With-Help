@@ -245,11 +245,12 @@ function Chooser(game, rack) {
         "words" : words
 			};
 
-//		if (score < 0 || $.inArray(this.seenMoves, plays)) {
-//			return;
-//		} else {
-//			seenMoves.push(plays);
-//		}
-		options.push(option);
+      var str = JSON.stringify(option);
+      if (this.seenMoves.indexOf(str) > 0) {
+          return;
+      } else {
+          this.seenMoves.push(str);
+      }
+		  options.push(option);
 	};
 }
