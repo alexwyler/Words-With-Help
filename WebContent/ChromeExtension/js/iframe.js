@@ -13,15 +13,19 @@ function search() {
   var missing = new Array();
 
   for (var i = 0; i < 7; i++) {
+    var tile = {};
     var letter = game.find(".rack_space_" + i).find(".letter").html();
     if (letter == null) {
       if (game.find(".rack_space_" + i).find(".points-0").length > 0) {
-        letter = "*";
+        tile.letter = "*";
+        tile.wildcard = true;
       } else {
         missing.push(i);
       }
+    } else{
+      tile.letter = letter;
     }
-    rack.push(letter);
+    rack.push(tile);
   }
 
   var board = new Array(15);
