@@ -139,6 +139,7 @@ function Chooser(game, rack) {
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
 		point) {
+    console.log(DawgUtil.dawg);
 		if (node["te"]) {
 			this.recordMove(partial, point);
 		}

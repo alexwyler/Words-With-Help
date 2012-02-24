@@ -24,11 +24,22 @@ function run() {
 }
 run();
 
+
+// load dawg only on demand
 function startFind() {
+	status = $("#status").html("Loading...<br/>");
+	var dawg = document.createElement("script");
+  dawg.type =  "text/javascript";
+  dawg.src = "js/dawg.json";
+  dawg.onload = find;  
+  document.getElementsByTagName('head')[0].appendChild(dawg);
+}
+
+function find() {
   try {
-	  options = [];
-	  loadingGif = "<img src='loading.gif'/>";
+    loadingGif = "<img src='loading.gif'/>";
 	  status = $("#status").html("Finding Moves...<br/>" + loadingGif);
+    options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
 		  tile = tile == null ? "&nbsp;" : tile.letter.toUpperCase();
