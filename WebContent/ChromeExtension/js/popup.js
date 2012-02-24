@@ -25,16 +25,21 @@ function run() {
 run();
 
 function startFind() {
-	options = [];
-	loadingGif = "<img src='loading.gif'/>";
-	status = $("#status").html("Finding Moves...<br/>" + loadingGif);
-	for ( var i = 0; i < 7; i++) {
-		var tile = rack[i];
-		tile = tile == null ? "&nbsp;" : tile.letter.toUpperCase();
-		$("#rack_" + i).html(tile);
-	}
-	clearBoard();
-	loadMoves();
+  try {
+	  options = [];
+	  loadingGif = "<img src='loading.gif'/>";
+	  status = $("#status").html("Finding Moves...<br/>" + loadingGif);
+	  for ( var i = 0; i < 7; i++) {
+		  var tile = rack[i];
+		  tile = tile == null ? "&nbsp;" : tile.letter.toUpperCase();
+		  $("#rack_" + i).html(tile);
+	  }
+	  clearBoard();
+	  loadMoves();
+  } catch (x) {
+    console.error(x);
+    updateStatus("Internal Error");
+  }
 }
 
 function sortByScore(a, b) {
@@ -61,9 +66,10 @@ function loadMoves() {
 	if (config.clientDawgz) {
 		var game = new Game(board, DawgUtil.dawg);
 		var chooser = new Chooser(game, rack);
-		processResults(chooser.getOptions());
+		var results = chooser.getOptions();
+    processResults(results);
 		finalizeResults();
-	} else {
+  } else {
 		loadFromServer();
 	}
 }
@@ -118,7 +124,7 @@ function updateStatus(html) {
 function processResults(results) {
 	options = options.concat(results);
 	options.sort(sortByScore);
-	options = options.splice(0, 12);
+	options = options.splice(0, 50);
 	$(".option").remove();
 	for ( var i = 0; i < options.length; i++) {
 		var words = "" + options[i].words;
