@@ -296,7 +296,7 @@ function Game(brd, dawg) {
 			var point = points[i];
 			var mod = this.specialSpaces[point.x][point.y];
 			var letterScore = this.scoreTile(this.board[point.x][point.y]);
-			if ($.inArray(point, this.pendingPoints) >= 0) {
+			if (this.pointIsPending(point)) {
 				if (mod == "DL") {
 					letterScore *= 2;
 				} else if (mod == "TL") {

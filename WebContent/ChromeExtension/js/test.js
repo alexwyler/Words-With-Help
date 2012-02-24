@@ -1,16 +1,16 @@
 var Test = {};
 
 Test.getTestData = function() {
-	rack = [ {letter: 'w'}, {letter:'o'}, {letter:'r'}];
+	  rack = [ {letter: 'i'}, {letter:'g'}, {letter:'e'}, {letter:'r'}];
 	board = [
-		    [ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+		  [ null, null, null, null, null, null, null, {letter: 'l'}, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
-				[ null, null, null, null, null, {letter: 'a'}, null, null, null, null, null, null, null, null, null ],
-				[ null, null, null, null, null, {letter: 'd'}, null, null, null, null, null, null, null, null, null ],
+				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
+				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
 				[ null, null, null, null, null, null, null, null, null, null, null, null, null, null, null ],
