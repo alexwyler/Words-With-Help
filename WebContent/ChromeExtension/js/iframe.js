@@ -36,8 +36,10 @@ function search() {
       var tile = space.children(".tile");
       var placedLetter = tile.children(".letter").html();
       var placedBlank = tile.find(".points-0").html();
-      placedLetter = placedBlank != null ? "*" : placedLetter;
-      if (placedLetter != null) {
+      if (placedBlank != null) {
+        placedLetter = {letter:"*", wildcard:true};
+      } else if (placedLetter != null) {
+        placedLetter = {letter: placedLetter};
 	      rack[missing.pop()] = placedLetter;
         board[i][j] = null;
       } else {
