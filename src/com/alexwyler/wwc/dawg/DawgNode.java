@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -34,11 +33,11 @@ public class DawgNode {
 
 	public static JSONObject convertToJSON(DawgNode node) throws JSONException {
 		JSONObject json = new JSONObject();
+		if (node.terminal) {
+			json.put("te", 1);
+		}
 		for (Character c : node.edges.keySet()) {
 			json.put("" + c, convertToJSON(node.getChild(c)));
-			if (node.terminal) {
-				json.put("te", 1);
-			}
 		}
 		return json;
 	}
@@ -61,15 +60,22 @@ public class DawgNode {
 		Scanner in = new Scanner(dict);
 		while (in.hasNextLine()) {
 			DawgNode cur = root;
-			for (char c : in.nextLine().toCharArray()) {
+			String words = in.nextLine();
+			for (char c : words.toCharArray()) {
 				DawgNode next = cur.edges.get(c);
 				if (next == null) {
 					next = new DawgNode();
 					cur.edges.put(Character.toLowerCase(c), next);
 				}
+				if (words.equals("waxed") || words.equals("aahed")) {
+					System.out.println(cur);
+				}
 				cur = next;
 			}
 			cur.terminal = true;
+			if (words.equals("waxed") || words.equals("aahed")) {
+				System.out.println(cur);
+			}
 		}
 		return root;
 	}
@@ -87,6 +93,10 @@ public class DawgNode {
 
 	public Collection<Character> getNextCharacters() {
 		return edges.keySet();
+	}
+	
+	public String toString() {
+		return "" + edges.keySet() + " terminal: " + terminal;
 	}
 
 }

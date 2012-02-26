@@ -31,7 +31,7 @@ function startFind() {
 	var dawg = document.createElement("script");
   dawg.type =  "text/javascript";
   dawg.src = "js/dawg.json";
-  dawg.onload = find;  
+  dawg.onload = find;
   document.getElementsByTagName('head')[0].appendChild(dawg);
 }
 
@@ -42,8 +42,8 @@ function find() {
     options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
-		  tile = tile ? {letter: "&nbsp;"} : tile.letter.toUpperCase();
-		  $("#rack_" + i).html(tile.letter);
+		  letter = !tile.letter ? "&nbsp;" : tile.letter.toUpperCase();
+		  $("#rack_" + i).html(letter);
 	  }
 	  clearBoard();
 	  loadMoves();
