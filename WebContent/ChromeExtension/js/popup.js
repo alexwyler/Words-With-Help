@@ -42,13 +42,13 @@ function find() {
     options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
-		  tile = tile == null ? "&nbsp;" : tile.letter.toUpperCase();
-		  $("#rack_" + i).html(tile);
+		  tile = tile ? {letter: "&nbsp;"} : tile.letter.toUpperCase();
+		  $("#rack_" + i).html(tile.letter);
 	  }
 	  clearBoard();
 	  loadMoves();
   } catch (x) {
-    console.error(x);
+    console.error(x.stack);
     updateStatus("Internal Error");
   }
 }
