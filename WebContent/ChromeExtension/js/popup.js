@@ -42,7 +42,7 @@ function find() {
     options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
-		  letter = tile ? "&nbsp;" : tile.letter.toUpperCase();
+		  letter = !tile.letter ? "&nbsp;" : tile.letter.toUpperCase();
 		  $("#rack_" + i).html(letter);
 	  }
 	  clearBoard();
