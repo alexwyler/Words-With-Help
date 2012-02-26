@@ -139,7 +139,6 @@ function Chooser(game, rack) {
 
 	this.extendRight = function(/* array<Tile> */partial, /* DawgNode */node,
 		point) {
-    console.log(DawgUtil.dawg);
 		if (node["te"]) {
 			this.recordMove(partial, point);
 		}
@@ -161,7 +160,7 @@ function Chooser(game, rack) {
 				  }
 				  for ( var j = 0; j < toChecks.length; j++) {
 					  var toCheck = toChecks[j];
-					  var next = node[toCheck.letter];
+					  var next = node["" + toCheck.letter];
 					  if (next) {
 						  partial.push(toCheck);
 						  right = {
@@ -170,7 +169,7 @@ function Chooser(game, rack) {
 						  };
 						  this.extendRight(partial, next, right);
 						  partial.pop();
-					  }
+            }
 				  }
 				  this.rack.splice(i, 0, removed);
 			  }
