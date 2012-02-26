@@ -42,8 +42,8 @@ function find() {
     options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
-		  tile = tile ? "&nbsp;" : tile.letter.toUpperCase();
-		  $("#rack_" + i).html(tile);
+		  letter = tile ? "&nbsp;" : tile.letter.toUpperCase();
+		  $("#rack_" + i).html(letter);
 	  }
 	  clearBoard();
 	  loadMoves();
