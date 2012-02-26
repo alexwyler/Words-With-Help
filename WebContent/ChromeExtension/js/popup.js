@@ -31,7 +31,7 @@ function startFind() {
 	var dawg = document.createElement("script");
   dawg.type =  "text/javascript";
   dawg.src = "js/dawg.json";
-  dawg.onload = find;  
+  dawg.onload = find;
   document.getElementsByTagName('head')[0].appendChild(dawg);
 }
 
@@ -42,13 +42,13 @@ function find() {
     options = [];
 	  for ( var i = 0; i < 7; i++) {
 		  var tile = rack[i];
-		  tile = tile == null ? "&nbsp;" : tile.letter.toUpperCase();
+		  tile = tile ? "&nbsp;" : tile.letter.toUpperCase();
 		  $("#rack_" + i).html(tile);
 	  }
 	  clearBoard();
 	  loadMoves();
   } catch (x) {
-    console.error(x);
+    console.error(x.stack);
     updateStatus("Internal Error");
   }
 }
