@@ -1,11 +1,13 @@
 function Game(brd, dawg) {
 	this.board = brd || [];
 	this.flipped = false;
-	// TODO: empty
-	this.empty = false;
 	this.pendingPoints = [];
 	this.specialSpaces = [];
 	this.dawg = dawg;
+  this.center = {
+		x : Math.floor(this.board.length / 2),
+		y : Math.floor(this.board[0].length / 2)
+	};
 
 	this.inBounds = function(point) {
 		return point.x >= 0 && point.x < 15 && point.y >= 0 && point.y < 15;
@@ -36,6 +38,11 @@ function Game(brd, dawg) {
 		var y = this.pendingPoints[0].y;
 		var horiz = true;
 		var vert = true;
+    if (this.empty) {
+      if (!this.pointIsPending(this.center)) {
+        return "Must play across center tile on first turn";
+			}
+    }
 
 		for ( var i = 0; i < this.pendingPoints.length; i++) {
 			var pendingPoint = this.pendingPoints[i];
@@ -53,43 +60,31 @@ function Game(brd, dawg) {
 		}
 
 		var createdWords = this.getCreatedWords();
-
-		if (this.empty) {
-			center = {
-				x : Math.floor(this.board.length / 2),
-				y : Math.floor(this.board[0].length / 2)
-			};
-			if (!$.arrayContains(createdWords[0], center)) {
-				return "Must play across center tile on first turn";
-			}
-		} else {
-			var connected = false;
-      this.createdWordStr = [];
-			for ( var i = 0; i < createdWords.length; i++) {
-				var createdWordPoints = this.orderPoints(createdWords[i]);
-				for ( var j = 0; j < createdWordPoints.length; j++) {
-					if (!this.pointIsPending(createdWordPoints[j])) {
-						connected = true;
-					}
-				}
-				this.createdWordStr[i] = this.pointsToStr(createdWordPoints);
-
-				if (this.createdWordStr == "") {
-					return "Empty created word!";
-				} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr[i])) {
-					return "'" + this.createdWordStr[i] + "' is not a recognized word";
+    this.createdWordStr = [];
+		var connected = false;
+		for ( var i = 0; i < createdWords.length; i++) {
+			var createdWordPoints = this.orderPoints(createdWords[i]);
+			for ( var j = 0; j < createdWordPoints.length; j++) {
+				if (!this.pointIsPending(createdWordPoints[j])) {
+					connected = true;
 				}
 			}
-			if (!connected) {
-				return "Play must connect with existing letters";
+			this.createdWordStr[i] = this.pointsToStr(createdWordPoints);
+
+			if (this.createdWordStr == "") {
+				return "Empty created word!";
+			} else if (!DawgUtil.inDict(this.dawg, this.createdWordStr[i])) {
+				return "'" + this.createdWordStr[i] + "' is not a recognized word";
 			}
+		}
+		if (!this.empty && !connected) {
+			return "Play must connect with existing letters";
 		}
 	};
 
   this.pointIsPending = function(point) {
-    var str = JSON.stringify(point);
     for ( var i = 0; i < this.pendingPoints.length; i++) {
-      if (str == JSON.stringify(this.pendingPoints[i])) {
+      if (point.x == this.pendingPoints[i].x && point.y == this.pendingPoints[i].y) {
         return true;
       }
     }
@@ -266,7 +261,6 @@ function Game(brd, dawg) {
 
 	this.flip = function() {
 		var flippedBoard = new Array(15);
-		;
 		for ( var x = 0; x < board.length; x++) {
 			flippedBoard[x] = new Array(15);
 			for ( var y = 0; y < board[x].length; y++) {
@@ -309,7 +303,7 @@ function Game(brd, dawg) {
 		}
 
     for (var idx in wordMods) {
-      wordMod = wordMods[idx];
+      var wordMod = wordMods[idx];
 		  if (wordMod == "DW") {
 			  score *= 2;
 		  } else if (wordMod == "TW") {
@@ -353,10 +347,20 @@ function Game(brd, dawg) {
 		this.alphabet.push(letter);
 	}
 
-	// DawgUtil.test(this, dawg);
-}
-
-function Point(x, y) {
-	this.x = x;
-	this.y = y;
+	this.empty = true;
+  for (var x in this.board) {
+    var col = this.board[x];
+    if (col) {
+      for (var y in col) {
+        var tile = this.tileAt(
+          {
+            x : x,
+            y : y
+          });
+        if (tile) {
+          this.empty = false;
+        }
+      }
+    }
+  }
 }

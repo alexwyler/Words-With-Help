@@ -18,23 +18,23 @@ function Chooser(game, rack) {
 			var anchors = [];
 			if (!this.game.empty) {
 				for ( var x = 0; x < 15; x++) {
-					p = {
+					var p = {
 						x : x,
 						y : y
 					};
-					right = {
+					var right = {
 						x : x + 1,
 						y : y
 					};
-					left = {
+					var left = {
 						x : x - 1,
 						y : y
 					};
-					down = {
+					var down = {
 						x : x,
 						y : y + 1
 					};
-					up = {
+					var up = {
 						x : x,
 						y : y - 1
 					};
@@ -46,7 +46,7 @@ function Chooser(game, rack) {
 					}
 				}
 			} else {
-				if (y == 6) {
+				if (y == 7) {
 					for ( var x = 1; x <= 7; x++) {
 						anchors.push({
 							             x : x,
@@ -71,7 +71,7 @@ function Chooser(game, rack) {
 					};
 				}
 				if (limit == 0) {
-					cur = {
+					var cur = {
 						x : p.x - 1,
 						y : p.y
 					};
@@ -163,7 +163,7 @@ function Chooser(game, rack) {
 					  var next = node["" + toCheck.letter];
 					  if (next) {
 						  partial.push(toCheck);
-						  right = {
+						  var right = {
 							  x : point.x + 1,
 							  y : point.y
 						  };
@@ -178,7 +178,7 @@ function Chooser(game, rack) {
 			  var next = node[tile.letter];
 			  if (next) {
 				  partial.push(tile);
-				  right = {
+				  var right = {
 					  x : point.x + 1,
 					  y : point.y
 				  };
@@ -250,7 +250,7 @@ function Chooser(game, rack) {
     if (this.seenMoves.indexOf(str) >= 0) {
       return;
     } else {
-		  options.push(option);
+		  this.options.push(option);
       this.seenMoves.push(str);
     }
 	};

@@ -24,7 +24,6 @@ function run() {
 }
 run();
 
-
 // load dawg only on demand
 function startFind() {
 	status = $("#status").html("Loading...<br/>");
